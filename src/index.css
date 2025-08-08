@@ -106,3 +106,34 @@ body {
 @media (min-width: 1024px) {
   .section { padding: 32px; }
 }
+
+
+/* ===== Pill toggles for EP Checklist ===== */
+.round-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  min-width: 96px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.85);
+  transition: all .2s ease;
+}
+.round-toggle:hover { background: rgba(255,255,255,.10); }
+.round-toggle:focus-visible { outline: 2px solid rgba(130,150,255,.6); outline-offset: 2px; }
+
+/* when pressed (state true) */
+.round-toggle[aria-pressed="true"],
+.round-toggle.on {
+  background: #6a6ffb;
+  color: #fff;
+  border-color: rgba(255,255,255,.18);
+  box-shadow: 0 6px 16px rgba(106,111,251,.35), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.round-toggle[aria-pressed="true"]:hover,
+.round-toggle.on:hover { filter: brightness(1.05); }
+

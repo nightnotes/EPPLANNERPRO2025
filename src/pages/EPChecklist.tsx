@@ -88,35 +88,51 @@ persist(updated, key==='done' && updated.done)
           </div>
         </div>
 
-        <div className="card-lg fade-in">
-          <div className="text-sm text-nn_muted mb-3">Snel naar</div>
-          <div className="flex flex-wrap gap-2">
-            <a className="tab tab-active" href="https://distrokid.com/new/" target="_blank" rel="noreferrer">DistroKid</a>
-            <a className="tab tab-active" href="https://artist.amuse.io/studio" target="_blank" rel="noreferrer">Amuse</a>
-            <a className="tab tab-active" href="https://mijn.bumastemra.nl/" target="_blank" rel="noreferrer">Buma/Stemra</a>
-          </div>
-        </div>
+        
+<div className="card-lg fade-in">
+  <div className="text-sm text-nn_muted mb-3">Snel naar</div>
+  <div className="flex items-center gap-2">
+    <a className="tab tab-active" href="https://distrokid.com/new/" target="_blank" rel="noreferrer">DistroKid</a>
+    <a className="tab tab-active" href="https://artist.amuse.io/studio" target="_blank" rel="noreferrer">Amuse</a>
+    <a className="tab tab-active" href="https://mijn.bumastemra.nl/" target="_blank" rel="noreferrer">Buma/Stemra</a>
+  </div>
+</div>
 
-        <div className="card-lg fade-in">
-          <div className="text-sm text-nn_muted mb-3">Volgende taak voor <b>{user}</b></div>
-          {!next ? (
-            <div className="text-nn_muted">Geen openstaande taken 🎉</div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-6 gap-3 items-center">
-              <div className="sm:col-span-2">{next.date} — <b>{next.artist}</b></div>
-              <div>{next.who}</div>
-              <div>{next.distribution}</div>
-              <label className="flex items-center gap-2"><input type="checkbox" checked={next.splits} onChange={()=>toggle('splits')} /> Splits</label>
-              <label className="flex items-center gap-2"><input type="checkbox" checked={next.buma} onChange={()=>toggle('buma')} /> Buma/Stemra</label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={next.done} disabled={!(next.splits && next.buma)} onChange={()=>toggle('done')} /> Klaar
-              </label>
-            </div>
-          )}
-        </div>
+<div className="card-lg fade-in">
+  <div className="text-sm text-nn_muted mb-3">Volgende taak voor <b>{user}</b></div>
+  {!next ? (
+    <div className="text-nn_muted">Geen openstaande taken 🎉</div>
+  ) : (
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 items-center">
+      <div className="md:col-span-4 flex items-center gap-2">
+        <span className="text-sm subtle">Datum</span>
+        <div className="font-medium">{next.date}</div>
+      </div>
+      <div className="md:col-span-4 truncate">
+        <div className="text-sm subtle">Artiest</div>
+        <div className="font-semibold truncate">{next.artist}</div>
+      </div>
+      <div className="md:col-span-2">
+        <div className="text-sm subtle">Wie</div>
+        <div>{next.who}</div>
+      </div>
+      <div className="md:col-span-2">
+        <div className="text-sm subtle">Distributie</div>
+        <div>{next.distribution}</div>
+      </div>
 
-        <div className="card-lg fade-in">
-          <div className="font-semibold mb-2">Laatst afgerond</div>
+      <div className="md:col-span-12 flex flex-wrap items-center gap-4 pt-1">
+        <button className={"round-toggle " + (next.splits ? "on" : "")} onClick={()=>toggle('splits')} aria-pressed={next.splits}>Splits</button>
+        <button className={"round-toggle " + (next.buma ? "on" : "")} onClick={()=>toggle('buma')} aria-pressed={next.buma}>Buma/Stemra</button>
+        <button className={"round-toggle " + (next.done ? "on" : "")} disabled={!(next.splits && next.buma)} onClick={()=>toggle('done')} aria-pressed={next.done}>Klaar</button>
+      </div>
+    </div>
+  )}
+</div>
+
+<div className="card-lg fade-in">
+  <div className="font-semibold mb-2">Laatst afgerond</div>
+
           {!last ? <div className="text-nn_muted">Nog niks afgerond.</div> :
             <div>{last.date} — <b>{last.artist}</b> ({last.distribution})</div>
           }

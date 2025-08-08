@@ -53,9 +53,23 @@ export default function EPChecklist(){
   }
   function toggle(key: 'splits'|'buma'|'done'){
     if (!next) return
-    const updated = { ...next, [key]: !(next as any)[key] } as TaskRow
-    if (key !== 'done' && (!updated.splits || !updated.buma)) updated.done = false
-    persist(updated, key==='done' && updated.done)
+    
+const newVal = !(next as any)[key]
+let updated = { ...next, [key]: newVal } as TaskRow
+// If user tries to set 'done' to true but prerequisites not met, block it
+if (key === 'done' && newVal === true && !(updated.splits && updated.buma)) {
+  return
+}
+// If any prerequisite unchecked, ensure done=false
+if (key !== 'done' && (!updated.splits || !updated.buma)) {
+  updated.done = false
+}
+// Allow unchecking done any time
+if (key === 'done' && newVal === false) {
+  updated.done = false
+}
+persist(updated, key==='done' && updated.done)
+
     setRows(rs=>rs.map(r=> r.id===updated.id ? updated : r))
   }
 
@@ -65,7 +79,7 @@ export default function EPChecklist(){
   return (
     <div>
       <Navbar />
-      <div className="max-w-6xl mx-auto px-4 pt-6 space-y-6">
+      <div className="section pt-6 space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">EP Checklist</h1>
           <div className="flex items-center gap-3 text-sm">
@@ -74,7 +88,7 @@ export default function EPChecklist(){
           </div>
         </div>
 
-        <div className="card p-6 fade-in">
+        <div className="card-lg fade-in">
           <div className="text-sm text-nn_muted mb-3">Snel naar</div>
           <div className="flex flex-wrap gap-2">
             <a className="tab tab-active" href="https://distrokid.com/new/" target="_blank" rel="noreferrer">DistroKid</a>
@@ -83,7 +97,7 @@ export default function EPChecklist(){
           </div>
         </div>
 
-        <div className="card p-6 fade-in">
+        <div className="card-lg fade-in">
           <div className="text-sm text-nn_muted mb-3">Volgende taak voor <b>{user}</b></div>
           {!next ? (
             <div className="text-nn_muted">Geen openstaande taken 🎉</div>
@@ -101,7 +115,7 @@ export default function EPChecklist(){
           )}
         </div>
 
-        <div className="card p-6 fade-in">
+        <div className="card-lg fade-in">
           <div className="font-semibold mb-2">Laatst afgerond</div>
           {!last ? <div className="text-nn_muted">Nog niks afgerond.</div> :
             <div>{last.date} — <b>{last.artist}</b> ({last.distribution})</div>

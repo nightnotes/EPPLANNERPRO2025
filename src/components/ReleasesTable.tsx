@@ -1,98 +1,70 @@
-
-import { useMemo, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { ReleaseRow } from '../utils/schedule'
+import { makeKey, getDone, setDone } from '../utils/releaseState'
 
 type Props = { rows: ReleaseRow[] }
-type TaskState = { splits?: boolean; buma?: boolean; done?: boolean }
-const KEY = 'releaseStates'
 
-function loadStates(): Record<string, TaskState> {
-  try { return JSON.parse(localStorage.getItem(KEY) || '{}') } catch { return {} }
-}
-function saveStates(s: Record<string, TaskState>) {
-  localStorage.setItem(KEY, JSON.stringify(s))
-}
-function idFor(r: ReleaseRow){ return `${r.date}_${r.artist}` }
+function Dot({ k }: { k: string }) {
+  const [done, setLocalDone] = useState<boolean>(getDone(k));
+  const timer = useRef<number | null>(null);
 
+  useEffect(() => {
+    const onSync = (e: StorageEvent) => { if (e.key === 'releaseStates') setLocalDone(getDone(k)); };
+    window.addEventListener('storage', onSync);
+    return () => window.removeEventListener('storage', onSync);
+  }, [k]);
 
-const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
-const addMonths = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const onClick = () => { setDone(k, true); setLocalDone(true); };
 
-export default function ReleasesTable({ rows }: Props) {
-  const states = useMemo(()=>loadStates(), [rows.length])
-
-  function setDone(id: string, val: boolean) {
-    const s = loadStates()
-    s[id] = { ...(s[id]||{}), done: val }
-    saveStates(s)
-    // force a repaint by updating a benign key (cheap trick)
-    requestAnimationFrame(()=>window.dispatchEvent(new Event('storage')))
-  }
-
-  function useLongPress(id: string) {
-    const timer = useRef<number | null>(null)
-    const start = () => {
-      if (timer.current) return
-      // 3s long-press
-      timer.current = window.setTimeout(() => {
-        setDone(id, false)
-        timer.current = null
-      }, 3000)
-    }
-    const cancel = () => {
-      if (timer.current) {
-        clearTimeout(timer.current)
-        timer.current = null
-      }
-    }
-    return {
-      onMouseDown: start, onMouseUp: cancel, onMouseLeave: cancel,
-      onTouchStart: start, onTouchEnd: cancel, onTouchCancel: cancel
-    }
-  }
+  const onPointerDown = () => {
+    timer.current = window.setTimeout(() => {
+      setDone(k, false);
+      setLocalDone(false);
+      timer.current = null;
+    }, 2000);
+  };
+  const clearTimer = () => { if (timer.current) { clearTimeout(timer.current); timer.current = null; } };
 
   return (
-    <div className="card max-w-6xl mx-auto mt-4 overflow-hidden fade-in glow">
-      <div className="px-6 py-4 border-b border-nn_border/70">
-        <div className="text-lg font-semibold">Releases</div>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="table-head">
-            <tr className="text-left">
-              <th className="px-4 py-3">Datum</th>
-              <th className="px-4 py-3">Artiest</th>
-              <th className="px-4 py-3">Wie?</th>
-              <th className="px-4 py-3">Distributie</th>
-              <th className="px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
-              <tr><td className="px-4 py-6 text-nn_muted" colSpan={5}>Geen items.</td></tr>
-            ) : rows.map((r, i) => {
-              const s = states[idFor(r)]
-              const green = !!s?.done
-              const id = idFor(r)
-              return (
-                <tr key={i} className="border-t border-nn_border/50 hover:bg-nn_bg2/30">
-                  <td className="px-4 py-2 whitespace-nowrap">{r.date}</td>
-                  <td className="px-4 py-2">{r.artist}</td>
-                  <td className="px-4 py-2">{r.who}</td>
-                  <td className="px-4 py-2">{r.distribution}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={"inline-block w-3 h-3 rounded-full cursor-pointer select-none " + (green ? "bg-green-500" : "bg-red-500")}
-                      title={green ? "Ingedrukt houden om ongedaan te maken" : "Nog niet klaar"}
-                      {...useLongPress(id)}
-                    />
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+    <button
+      onClick={onClick}
+      onPointerDown={onPointerDown}
+      onPointerUp={clearTimer}
+      onPointerLeave={clearTimer}
+      className={`h-4 w-4 rounded-full border transition-all ${done ? 'bg-green-500 border-green-600' : 'bg-red-500 border-red-600'}`}
+      title={done ? 'Klaar — 2 sec ingedrukt houden om terug te zetten' : 'Niet klaar — klik om groen te maken'}
+    />
+  );
+}
+
+export default function ReleasesTable({ rows }: Props) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="table w-full">
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Artiest</th>
+            <th>Wie</th>
+            <th>Distributie</th>
+            <th>Klaar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(r => {
+            const k = makeKey(r.date, r.artist);
+            return (
+              <tr key={k}>
+                <td>{r.date}</td>
+                <td>{r.artist}</td>
+                <td>{r.who}</td>
+                <td>{r.distribution}</td>
+                <td><Dot k={k} /></td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }

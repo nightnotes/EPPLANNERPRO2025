@@ -114,7 +114,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 8px 14px;
-  min-width: 96px;
+  min-width: 84px;
   font-weight: 600;
   font-size: 14px;
   border-radius: 9999px;
@@ -137,3 +137,24 @@ body {
 .round-toggle[aria-pressed="true"]:hover,
 .round-toggle.on:hover { filter: brightness(1.05); }
 
+
+
+/* Ensure next-task actions wrap inside the card */
+.next-task-actions { display:flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+@media (max-width: 1024px) {
+  .next-task-actions { justify-content: flex-start; }
+}
+
+
+/* Keep actions inside the card */
+.next-task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  max-width: 100%;
+  padding-right: 6px;
+}
+@media (max-width: 1024px) {
+  .next-task-actions { justify-content: flex-start; }
+}

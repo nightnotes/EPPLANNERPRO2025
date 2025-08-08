@@ -128,7 +128,7 @@ export default function EPChecklist() {
                   <div className="lg:col-span-2">{next.who}</div>
                   <div className="lg:col-span-2">{next.distribution}</div>
                   <div className="lg:col-span-4">
-                    <div className="flex items-center justify-center gap-2 sm:gap-3">
+                    <div className="next-task-actions flex items-center justify-end gap-2 sm:gap-3">
                       <button className={"round-toggle " + ((states[idFor(next)]?.splits) ? "on" : "")} onClick={()=>toggle(next, 'splits')} aria-pressed={!!states[idFor(next)]?.splits}>Splits</button>
                       <button className={"round-toggle " + ((states[idFor(next)]?.buma) ? "on" : "")} onClick={()=>toggle(next, 'buma')} aria-pressed={!!states[idFor(next)]?.buma}>Buma/Stemra</button>
                       <button className={"round-toggle " + ((states[idFor(next)]?.done) ? "on" : "")} disabled={!(states[idFor(next)]?.splits && states[idFor(next)]?.buma)} onClick={()=>toggle(next, 'done')} aria-pressed={!!states[idFor(next)]?.done}>Klaar</button>

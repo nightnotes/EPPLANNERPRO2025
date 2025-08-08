@@ -3,9 +3,9 @@
 @tailwind components;
 @tailwind utilities
 
-@keyframes twinkle { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
-@keyframes twinkle2 { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
-@keyframes twinkle3 { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
+ 50%{opacity:1} 100%{opacity:0} 
+ 50%{opacity:1} 100%{opacity:0} 
+ 50%{opacity:1} 100%{opacity:0} 
 
 ;
 
@@ -135,11 +135,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 
 /* ---- Global animated gradient background (single loop) ---- */
 body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 50%, #000000 100%); background-attachment: fixed; animation: bgShift 28s ease-in-out infinite alternate; }
-@keyframes bgShift {
 
-
-
-}
 
 
 /* Circular toggle buttons ("bolletjes") */
@@ -166,7 +162,7 @@ body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 5
 .stars { background-repeat: repeat; opacity: .28; }
 
 
-@keyframes bgShift { 0%{background-position:10% 0%} 50%{background-position:50% 30%} 100%{background-position:80% 0%} }
+ 50%{background-position:50% 30%} 100%{background-position:80% 0%} 
 
 #sky-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 #root { position: relative; z-index: 1; }
@@ -201,8 +197,8 @@ body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 5
   opacity:.16;
 }
 
- 50%{opacity:1} 100%{opacity:0} } 50%{opacity:.26} }
- 50%{opacity:1} 100%{opacity:0} } 50%{opacity:.22} }
+ 50%{opacity:1} 100%{opacity:0}  50%{opacity:.26} 
+ 50%{opacity:1} 100%{opacity:0}  50%{opacity:.22} 
 
 /* Glassy hero art */
 .login-hero-art {
@@ -230,7 +226,7 @@ body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 5
 
 
 .stars-fixed { position:absolute; inset:0; background-repeat:repeat; background-size: 400px 400px; animation: starfade 6s ease-in-out infinite alternate; }
-@keyframes starfade { from { opacity:0.3; } to { opacity:1; } }
+ to { opacity:1; } 
 
 
 /* Glass blur overlay inside illustration card */
@@ -264,4 +260,3 @@ body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 5
 
 
 
-}

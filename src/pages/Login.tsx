@@ -7,6 +7,26 @@ export default function Login() {
   const [pwd, setPwd] = useState("")
   const [err, setErr] = useState<string | null>(null)
 
+  // ---- Parallax helpers (avoid inline const in TSX attributes) ----
+  function setParallax(el: HTMLDivElement, x: number, y: number) {
+    el.style.setProperty('--px', String(x))
+    el.style.setProperty('--py', String(y))
+  }
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget
+    const r = el.getBoundingClientRect()
+    setParallax(el, e.clientX - (r.left + r.width/2), e.clientY - (r.top + r.height/2))
+  }
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    setParallax(e.currentTarget, 0, 0)
+  }
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const t = e.touches[0]
+    const el = e.currentTarget
+    const r = el.getBoundingClientRect()
+    setParallax(el, t.clientX - (r.left + r.width/2), t.clientY - (r.top + r.height/2))
+  }
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!login(user, pwd)) {
@@ -44,23 +64,26 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Right: image */}
+          {/* Right: cinematic illustration with parallax */}
           <div className="relative">
-            <div className="rounded-3xl overflow-hidden shadow-nn ring-1 ring-nn_border/60 illustration-card login-visual" onMouseMove={(e)=>{ const el = e.currentTarget as HTMLDivElement; const r = el.getBoundingClientRect(); el.style.setProperty('--px', String(e.clientX - (r.left + r.width/2))); el.style.setProperty('--py', String(e.clientY - (r.top + r.height/2))); }} onMouseLeave={(e)=>{ const el = e.currentTarget as HTMLDivElement; el.style.setProperty("--px","0"); el.style.setProperty("--py","0"); }} onTouchMove={(e)=>{ const t = e.touches[0]; const el = e.currentTarget as HTMLDivElement; const r = el.getBoundingClientRect(); el.style.setProperty('--px', String(t.clientX - (r.left + r.width/2))); el.style.setProperty('--py', String(t.clientY - (r.top + r.height/2))); }}>{ const r=(e.currentTarget as HTMLDivElement).getBoundingClientRect(); (e.currentTarget as HTMLDivElement).style.setProperty("--px", String((e.clientX - (r.left + r.width/2)))); (e.currentTarget as HTMLDivElement).style.setProperty("--py", String((e.clientY - (r.top + r.height/2))); }} onTouchMove={(e)=>{ const t=e.touches[0]; const el=(e.currentTarget as HTMLDivElement); const r=el.getBoundingClientRect(); el.style.setProperty("--px", String((t.clientX - (r.left + r.width/2)))); el.style.setProperty("--py", String((t.clientY - (r.top + r.height/2))); }}>
-              
-{/* layered cinematic background */}
-<div className="layer stars-a parallax-1"></div>
-<div className="layer stars-b parallax-2"></div>
-<div className="layer stars-c parallax-3"></div>
-<div className="layer mist-1 parallax-2"></div>
-<div className="layer mist-2 parallax-3"></div>
-<div className="layer moon-glow parallax-1"></div>
-<div className="layer shoot shoot-1 glow"></div>
-<div className="layer shoot shoot-2 glow"></div>
-<div className="layer shoot shoot-3 glow"></div>
+            <div
+              className="rounded-3xl overflow-hidden shadow-nn ring-1 ring-nn_border/60 illustration-card login-visual"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              onTouchMove={handleTouchMove}
+            >
+              {/* layered cinematic background */}
+              <div className="layer stars-a parallax-1"></div>
+              <div className="layer stars-b parallax-2"></div>
+              <div className="layer stars-c parallax-3"></div>
+              <div className="layer mist-1 parallax-2"></div>
+              <div className="layer mist-2 parallax-3"></div>
+              <div className="layer moon-glow parallax-1"></div>
+              <div className="layer shoot shoot-1 glow"></div>
+              <div className="layer shoot shoot-2 glow"></div>
+              <div className="layer shoot shoot-3 glow"></div>
 
-<img src="/logo-nightnotes.png" alt="Night Notes visual" className="w-full h-full object-contain p-10" />
-
+              <img src="/logo-nightnotes.png" alt="Night Notes visual" className="w-full h-full object-contain p-10" />
             </div>
           </div>
         </div>

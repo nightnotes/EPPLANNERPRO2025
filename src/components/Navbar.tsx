@@ -17,7 +17,7 @@ export default function Navbar() {
           </nav>
         </div>
         <div className="flex items-center gap-3">
-          <div className="text-sm text-nn_muted">Welkom {user}</div>
+          <div className="text-base text-nn_muted">Welkom {user}</div>
           <button className="tab" onClick={() => { logout(); location.href = '/'; }}>Log out</button>
         </div>
       </div>

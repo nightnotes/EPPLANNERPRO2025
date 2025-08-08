@@ -19,6 +19,36 @@ const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
 const addMonths = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth() + n, 1);
 
 export default function ReleasesTable({ rows }: Props) {
+  const keyOf = (r: any) => `${r.date}__${r.artist}`;
+  const statusApiUrl = '/.netlify/functions/release-status';
+  const [statusMap, setStatusMap] = useState<Record<string, 'red'|'green'>>({});
+  const holdTimer = useRef<number|null>(null);
+
+  // Load persisted statuses
+  useEffect(() => {
+    let isMounted = true;
+    fetch(statusApiUrl).then(r => r.ok ? r.json() : {}).then((data:any) => {
+      if (!isMounted) return;
+      const next: Record<string,'red'|'green'> = { ...(data||{}) };
+      rows.forEach((r:any) => { const k = keyOf(r); if (!next[k]) next[k] = (r.status as any) || 'red'; });
+      setStatusMap(next);
+    }).catch(()=>{
+      // fallback: default all to red
+      const next: Record<string,'red'|'green'> = {};
+      rows.forEach((r:any)=>{ next[keyOf(r)] = (r.status as any)||'red'; });
+      setStatusMap(next);
+    });
+    return () => { isMounted = false };
+  }, [rows]);
+
+  const saveStatus = (k:string, v:'red'|'green') =>
+    fetch(statusApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k, status: v }) })
+      .catch(()=>{});
+
+  const makeGreen = (k: string) => { setStatusMap(m => ({ ...m, [k]: 'green' })); saveStatus(k, 'green'); };
+  const cancelHold = () => { if (holdTimer.current) { clearTimeout(holdTimer.current); holdTimer.current = null; } };
+  const startHoldToReset = (k: string) => { cancelHold(); holdTimer.current = window.setTimeout(() => { setStatusMap(m => ({ ...m, [k]: 'red' })); saveStatus(k, 'red'); holdTimer.current = null; }, 2000); };
+
   const states = useMemo(()=>loadStates(), [rows.length])
 
   function setDone(id: string, val: boolean) {
@@ -65,11 +95,11 @@ export default function ReleasesTable({ rows }: Props) {
               <th className="px-4 py-3">Wie?</th>
               <th className="px-4 py-3">Distributie</th>
               <th className="px-4 py-3">Status</th>
-            </tr>
+            <td>{(() => { const k = keyOf(row); const isGreen = statusMap[k] === 'green'; return (<button className={`status-dot ${isGreen ? 'green' : 'red'}`} aria-pressed={isGreen} onClick={() => !isGreen && makeGreen(k)} onMouseDown={() => isGreen && startHoldToReset(k)} onMouseUp={cancelHold} onMouseLeave={cancelHold} onTouchStart={() => isGreen && startHoldToReset(k)} onTouchEnd={cancelHold} />); })()}</td></tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
-              <tr><td className="px-4 py-6 text-nn_muted" colSpan={5}>Geen items.</td></tr>
+              <tr><td className="px-4 py-6 text-nn_muted" colSpan={5}>Geen items.</td><td>{(() => { const k = keyOf(row); const isGreen = statusMap[k] === 'green'; return (<button className={`status-dot ${isGreen ? 'green' : 'red'}`} aria-pressed={isGreen} onClick={() => !isGreen && makeGreen(k)} onMouseDown={() => isGreen && startHoldToReset(k)} onMouseUp={cancelHold} onMouseLeave={cancelHold} onTouchStart={() => isGreen && startHoldToReset(k)} onTouchEnd={cancelHold} />); })()}</td></tr>
             ) : rows.map((r, i) => {
               const s = states[idFor(r)]
               const green = !!s?.done
@@ -87,7 +117,7 @@ export default function ReleasesTable({ rows }: Props) {
                       {...useLongPress(id)}
                     />
                   </td>
-                </tr>
+                <td>{(() => { const k = keyOf(row); const isGreen = statusMap[k] === 'green'; return (<button className={`status-dot ${isGreen ? 'green' : 'red'}`} aria-pressed={isGreen} onClick={() => !isGreen && makeGreen(k)} onMouseDown={() => isGreen && startHoldToReset(k)} onMouseUp={cancelHold} onMouseLeave={cancelHold} onTouchStart={() => isGreen && startHoldToReset(k)} onTouchEnd={cancelHold} />); })()}</td></tr>
               )
             })}
           </tbody>

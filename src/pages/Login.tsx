@@ -46,9 +46,9 @@ export default function Login() {
               Night Notes
             </div>
             <h1 className="text-4xl sm:text-5xl font-semibold leading-tight mb-4">Welkom bij<br />Night Notes</h1>
-            <p className="text-nn_muted max-w-xl mb-6">Welkom bij Night Notes, waar dromen waar worden gemaakt terwijl je droomt.</p>
+            <p className="text-nn_muted max-w-xl mb-6">Piano melodies that turn the night into your most beautiful dream.</p>
 
-            <div className="card p-6 sm:p-8 max-w-md">
+            <div className="card login-card p-6 sm:p-8 max-w-md">
               <div className="flex items-center gap-3 mb-4">
                 <img src="/logo-nightnotes.png" alt="Night Notes" className="h-10 w-auto" />
                 <div className="font-semibold">Inloggen</div>
@@ -68,9 +68,6 @@ export default function Login() {
           <div className="relative">
             <div
               className="rounded-3xl overflow-hidden shadow-nn ring-1 ring-nn_border/60 illustration-card login-visual"
-              
-              
-              onTouchMove={handleTouchMove}
             >
               {/* layered cinematic background */}
               <div className="layer stars-a parallax-1"></div>
@@ -87,7 +84,7 @@ export default function Login() {
             </div>
           </div>
         </div>
-            <div className="login-hero-art" />
+            
       </div>
     </div>
   )

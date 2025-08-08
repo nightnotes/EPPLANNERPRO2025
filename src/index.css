@@ -41,20 +41,20 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 .stars-1 { animation: twinkle 8s linear infinite; background-image: radial-gradient(2px 2px at 20px 30px, #fff 80%, transparent 81%), radial-gradient(1px 1px at 100px 120px, #fff 80%, transparent 81%), radial-gradient(1.5px 1.5px at 150px 80px, #fff 80%, transparent 81%); }
 .stars-2 { animation: twinkle 10s linear infinite reverse; opacity:.25; background-image: radial-gradient(1.5px 1.5px at 60px 90px, #fff 80%, transparent 81%), radial-gradient(1px 1px at 180px 160px, #fff 80%, transparent 81%), radial-gradient(1.5px 1.5px at 120px 30px, #fff 80%, transparent 81%); }
 .stars-3 { animation: twinkle 12s linear infinite; opacity:.2; background-image: radial-gradient(1px 1px at 90px 150px, #fff 80%, transparent 81%), radial-gradient(1px 1px at 30px 170px, #fff 80%, transparent 81%), radial-gradient(1.5px 1.5px at 170px 40px, #fff 80%, transparent 81%); }
-@keyframes twinkle { 0%{opacity:.2; transform:translateY(0)} 50%{opacity:.5} 100%{opacity:.2; transform:translateY(-10px)} }
+@keyframes twinkle { 0%{opacity:.18} 50%{opacity:.42} 100%{opacity:.18} } 50%{opacity:.5} 100%{opacity:.2; transform:translateY(-10px)} }
 
 
 
 
 
-@keyframes shoot { 0%{opacity:0; transform:translateX(0)} 10%{opacity:.6} 40%{opacity:0.0} 100%{transform:translateX(120vw); opacity:0} }
+ 10%{opacity:.6} 40%{opacity:0.0} 100%{transform:translateX(120vw); opacity:0} }
 
 /* Ensure app sits above stars */
 #root { position: relative; z-index: 1; }
 
 /* Illustration card */
 .illustration-card {
-  background: url('/login-bg.jpg') center/cover no-repeat;
+  background: url('/login-hero.jpg') center/cover no-repeat;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 1.5rem;
@@ -67,7 +67,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 
 /* ---- Cinematic starfield INSIDE the illustration-card ---- */
 .illustration-card {
-  background: url('/login-bg.jpg') center/cover no-repeat;
+  background: url('/login-hero.jpg') center/cover no-repeat;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 1.5rem;
@@ -76,7 +76,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 
 /* Parallax factors via CSS variables set from mouse/touch */
 .illustration-card {
-  background: url('/login-bg.jpg') center/cover no-repeat;
+  background: url('/login-hero.jpg') center/cover no-repeat;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 1.5rem;
@@ -126,7 +126,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 
 /* --- High quality background for the illustration card --- */
 .illustration-card {
-  background: url('/login-bg.jpg') center/cover no-repeat;
+  background: url('/login-hero.jpg') center/cover no-repeat;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 1.5rem;
@@ -140,7 +140,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 
 /* Realistic photo background behind the Night Notes logo */
 .illustration-card {
-  background: url('/login-bg.jpg') center/cover no-repeat;
+  background: url('/login-hero.jpg') center/cover no-repeat;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 1.5rem;
@@ -148,11 +148,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 
 
 /* ---- Global animated gradient background (single loop) ---- */
-body {
-  background: radial-gradient(1200px 800px at 10% 0%, #0b0f18 0%, #05070c 45%, #000000 100%);
-  background-attachment: fixed;
-  animation: bgShift 28s ease-in-out infinite alternate;
-}
+body { background: radial-gradient(1200px 800px at 10% 0%, #080a12 0%, #03050a 50%, #000000 100%); background-attachment: fixed; animation: bgShift 28s ease-in-out infinite alternate; }
 @keyframes bgShift {
   0%   { background-position: 10% 0%; }
   50%  { background-position: 50% 30%; }
@@ -221,11 +217,7 @@ body {
 }
 
 /* Global gradient backdrop (single loop) */
-body {
-  background: radial-gradient(1200px 800px at 10% 0%, #0b0f18 0%, #05070c 45%, #000000 100%);
-  background-attachment: fixed;
-  animation: bgShift 28s ease-in-out infinite alternate;
-}
+body { background: radial-gradient(1200px 800px at 10% 0%, #080a12 0%, #03050a 50%, #000000 100%); background-attachment: fixed; animation: bgShift 28s ease-in-out infinite alternate; }
 @keyframes bgShift {
   0%   { background-position: 10% 0%; }
   50%  { background-position: 50% 30%; }
@@ -270,7 +262,7 @@ body {
   opacity:.16;
 }
 
-@keyframes twinkle { 0%,100%{opacity:.12} 50%{opacity:.32} }
+@keyframes twinkle { 0%{opacity:.18} 50%{opacity:.42} 100%{opacity:.18} } 50%{opacity:.32} }
 @keyframes twinkle2 { 0%,100%{opacity:.10} 50%{opacity:.26} }
 @keyframes twinkle3 { 0%,100%{opacity:.08} 50%{opacity:.22} }
 
@@ -301,3 +293,28 @@ body {
 
 .stars-fixed { position:absolute; inset:0; background-repeat:repeat; background-size: 400px 400px; animation: starfade 6s ease-in-out infinite alternate; }
 @keyframes starfade { from { opacity:0.3; } to { opacity:1; } }
+
+
+/* Glass blur overlay inside illustration card */
+.illustration-card { position: relative; }
+.illustration-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: inherit;
+  background-size: cover;
+  background-position: center;
+  filter: blur(16px) saturate(110%);
+  transform: scale(1.03);
+  border-radius: inherit;
+  opacity: 0.9;
+}
+.illustration-card > img { position: relative; z-index: 1; }
+
+
+/* Subtle outer glow behind the login card */
+.login-card { 
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.45),
+    0 0 40px rgba(88, 111, 255, .12);
+}

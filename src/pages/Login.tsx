@@ -46,7 +46,7 @@ export default function Login() {
               Night Notes
             </div>
             <h1 className="text-4xl sm:text-5xl font-semibold leading-tight mb-4">Welkom bij<br />Night Notes</h1>
-            <p className="text-nn_muted max-w-xl mb-6">Log in om releases te beheren, je EP-checklist af te vinken en snel door te klikken naar DistroKid, Amuse en Buma/Stemra.</p>
+            <p className="text-nn_muted max-w-xl mb-6">Welkom bij Night Notes, waar dromen waar worden gemaakt terwijl je droomt.</p>
 
             <div className="card p-6 sm:p-8 max-w-md">
               <div className="flex items-center gap-3 mb-4">
@@ -68,8 +68,8 @@ export default function Login() {
           <div className="relative">
             <div
               className="rounded-3xl overflow-hidden shadow-nn ring-1 ring-nn_border/60 illustration-card login-visual"
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
+              
+              
               onTouchMove={handleTouchMove}
             >
               {/* layered cinematic background */}
@@ -87,6 +87,7 @@ export default function Login() {
             </div>
           </div>
         </div>
+            <div className="login-hero-art" />
       </div>
     </div>
   )

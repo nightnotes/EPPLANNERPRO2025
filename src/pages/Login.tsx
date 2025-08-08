@@ -68,20 +68,7 @@ export default function Login() {
           <div className="relative">
             <div
               className="rounded-3xl overflow-hidden shadow-nn ring-1 ring-nn_border/60 illustration-card login-visual"
-            >
-              {/* layered cinematic background */}
-              <div className="layer stars-a parallax-1"></div>
-              <div className="layer stars-b parallax-2"></div>
-              <div className="layer stars-c parallax-3"></div>
-              <div className="layer mist-1 parallax-2"></div>
-              <div className="layer mist-2 parallax-3"></div>
-              <div className="layer moon-glow parallax-1"></div>
-              <div className="layer shoot shoot-1 glow"></div>
-              <div className="layer shoot shoot-2 glow"></div>
-              <div className="layer shoot shoot-3 glow"></div>
-
-              <img src="/logo-nightnotes.png" alt="Night Notes visual" className="w-full h-full object-contain p-10" />
-            </div>
+            ><img src="/logo-nightnotes.png" alt="Night Notes visual" className="w-full h-full object-contain p-10" /></div>
           </div>
         </div>
             

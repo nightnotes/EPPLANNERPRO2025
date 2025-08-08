@@ -116,11 +116,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 /* Mist & glow layers for depth */
 .mist-1 { background: radial-gradient(60% 40% at 70% 20%, rgba(120,140,255,.10), transparent 60%); filter: blur(12px); }
 .mist-2 { background: radial-gradient(50% 30% at 40% 70%, rgba(110,150,255,.08), transparent 60%); filter: blur(16px); }
-.moon-glow { background: radial-gradient(20% 20% at 85% 15%, rgba(255,255,255,.10), transparent 60%); filter: blur(6px); }
-
-/* Shooting stars removed (no falling stars on login) */
-/* Card sizing for the visual on login */
-.login-visual { height: 460px; }
+.moon-glow { background: radial-gradient(20% 20% at 85% 15%, rgba(255,255,255,
 @media (min-width: 1024px) { .login-visual { height: 520px; } }
 
 
@@ -148,7 +144,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 
 
 /* ---- Global animated gradient background (single loop) ---- */
-body { background: radial-gradient(1200px 800px at 10% 0%, #080a12 0%, #03050a 50%, #000000 100%); background-attachment: fixed; animation: bgShift 28s ease-in-out infinite alternate; }
+body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 50%, #000000 100%); background-attachment: fixed; animation: bgShift 28s ease-in-out infinite alternate; }
 @keyframes bgShift {
   0%   { background-position: 10% 0%; }
   50%  { background-position: 50% 30%; }
@@ -198,14 +194,7 @@ body { background: radial-gradient(1200px 800px at 10% 0%, #080a12 0%, #03050a 5
   background-size: 460px 460px;
   opacity:.18; animation: twk 20s ease-in-out infinite;
 }
-@keyframes twk { 0%,100%{opacity:.18} 50%{opacity:.42} }
-
-/* Diagonal shooting stars (top-right to bottom-left), with blur */
-.meteor { width: 40vw; height: 2px;
-  background: linear-gradient(90deg, rgba(255,255,255,.85), rgba(255,255,255,0));
-  filter: blur(.8px) drop-shadow(0 0 6px rgba(255,255,255,.35));
-  transform: rotate(-20deg); opacity:0;
-}
+@keyframes twk { 0%,100%{opacity:.18} 50%{opacity:
 .m1 { top: 10vh; left: -30vw; animation: fly 22s linear infinite 3s; }
 .m2 { top: 35vh; left: -35vw; animation: fly 28s linear infinite 11s; }
 .m3 { top: 60vh; left: -40vw; animation: fly 32s linear infinite 18s; }
@@ -217,7 +206,7 @@ body { background: radial-gradient(1200px 800px at 10% 0%, #080a12 0%, #03050a 5
 }
 
 /* Global gradient backdrop (single loop) */
-body { background: radial-gradient(1200px 800px at 10% 0%, #080a12 0%, #03050a 50%, #000000 100%); background-attachment: fixed; animation: bgShift 28s ease-in-out infinite alternate; }
+body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 50%, #000000 100%); background-attachment: fixed; animation: bgShift 28s ease-in-out infinite alternate; }
 @keyframes bgShift {
   0%   { background-position: 10% 0%; }
   50%  { background-position: 50% 30%; }
@@ -316,5 +305,5 @@ body { background: radial-gradient(1200px 800px at 10% 0%, #080a12 0%, #03050a 5
 .login-card { 
   box-shadow:
     0 10px 30px rgba(0,0,0,.45),
-    0 0 40px rgba(88, 111, 255, .12);
-}
+    0 0 60px rgba(120, 140, 255, .16);
+ box-shadow: 0 10px 30px rgba(0,0,0,.55), 0 0 50px rgba(88, 111, 255, .25); }

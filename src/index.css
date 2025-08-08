@@ -256,4 +256,11 @@ body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 5
 .illustration-card > img { position: relative; z-index: 1; }
 
 
-@keyframes twinkle { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
+ 50%{opacity:1} 100%{opacity:0} }
+
+
+@keyframes twinkle {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}

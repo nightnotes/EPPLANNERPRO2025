@@ -1,3 +1,4 @@
+
 export type ReleaseRow = {
   date: string;
   artist: string;
@@ -15,46 +16,44 @@ const DISTROKID_ORDER = [
   "Lila Serene","Soft Dawn","Nunery Dream","Celestine Viora","Ludo Legato"
 ];
 
-const WHO_BY_ARTIST: Record<string, "Nuno" | "Martijn"> = {
-  "Dreamflow":"Nuno","Poluz":"Nuno","Doris Lost":"Nuno","Eternal":"Nuno","Slaapmutsje":"Nuno","ZizZa":"Nuno","Sleepy Taes":"Nuno",
-  "Muted Mind":"Martijn","Swooshy":"Martijn","Evelyn Winter":"Martijn","Krople":"Martijn","Katty":"Martijn","Sophia Vale":"Martijn","Domindo Nuni":"Martijn",
-  "Motionless":"Martijn","Loomy":"Martijn","Eleanor Moon":"Martijn","Luna Nights":"Martijn","Ava Willow":"Martijn","Sleepy Delrow":"Martijn",
-  "Lila Serene":"Martijn","Soft Dawn":"Martijn","Nunery Dream":"Martijn","Celestine Viora":"Martijn","Ludo Legato":"Martijn"
+const WHO_BY_ARTIST: Record<string, "Nuno"|"Martijn"> = {
+  "Dreamflow":"Nuno","Poluz":"Martijn","Doris Lost":"Nuno","Eternal":"Martijn","Slaapmutsje":"Nuno","ZizZa":"Martijn","Sleepy Taes":"Nuno",
+  "Muted Mind":"Nuno","Swooshy":"Nuno","Evelyn Winter":"Martijn","Krople":"Martijn","Katty":"Martijn","Sophia Vale":"Martijn","Domindo Nuni":"Martijn",
+  "Motionless":"Martijn","Loomy":"Nuno","Eleanor Moon":"Nuno","Luna Nights":"Martijn","Ava Willow":"Martijn","Sleepy Delrow":"Nuno","Lila Serene":"Nuno",
+  "Soft Dawn":"Nuno","Nunery Dream":"Nuno","Celestine Viora":"Nuno","Ludo Legato":"Martijn"
 };
 
-function pad(n: number){ return n.toString().padStart(2,'0'); }
-function fmt(d: Date){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-
-function getISOWeek(date: Date) {
-  const target = new Date(date.valueOf());
-  const dayNr = (date.getDay() + 6) % 7;
-  target.setDate(target.getDate() - dayNr + 3);
-  const firstThursday = new Date(target.getFullYear(), 0, 4);
-  const firstThursdayDayNr = (firstThursday.getDay() + 6) % 7;
-  firstThursday.setDate(firstThursday.getDate() - firstThursdayDayNr + 3);
-  const weekNumber = 1 + Math.round((target.getTime() - firstThursday.getTime()) / (7 * 24 * 3600 * 1000));
-  return weekNumber;
+function fmt(d: Date): string {
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+function getISOWeek(date: Date): number {
+  const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  // @ts-ignore
+  tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay()||7));
+  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(),0,1));
+  return Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1)/7);
 }
 
-export function generateSchedule(start: Date = new Date('2025-08-25'), end: Date = new Date('2026-12-31')): ReleaseRow[] {
+export function generateSchedule(start: Date, end: Date, options?: { startDoubleWeek?: boolean }): ReleaseRow[] {
+  let double = options?.startDoubleWeek ?? true;
+  let prevWeek = getISOWeek(start);
+  let dkIdx = 0;
+  let amIdx = 0;
   const rows: ReleaseRow[] = [];
-  let dkIdx = 0, amIdx = 0;
-  let prevWeek: number | null = null;
-  let double = false;
-
-  const cur = new Date(start);
-  while (cur <= end) {
-    const w = getISOWeek(cur);
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const w = getISOWeek(d);
     if (w !== prevWeek) { double = !double; prevWeek = w; }
     const dkArtist = DISTROKID_ORDER[dkIdx % DISTROKID_ORDER.length];
-    rows.push({ date: fmt(cur), artist: dkArtist, who: WHO_BY_ARTIST[dkArtist] ?? "Martijn", distribution: "Distrokid" });
+    rows.push({ date: fmt(d), artist: dkArtist, who: WHO_BY_ARTIST[dkArtist] ?? "Martijn", distribution: "Distrokid" });
     dkIdx++;
     if (double) {
       const amArtist = AMUSE_ORDER[amIdx % AMUSE_ORDER.length];
-      rows.push({ date: fmt(cur), artist: amArtist, who: WHO_BY_ARTIST[amArtist] ?? "Nuno", distribution: "Amuse" });
+      rows.push({ date: fmt(d), artist: amArtist, who: WHO_BY_ARTIST[amArtist] ?? "Nuno", distribution: "Amuse" });
       amIdx++;
     }
-    cur.setDate(cur.getDate() + 1);
   }
   return rows;
 }

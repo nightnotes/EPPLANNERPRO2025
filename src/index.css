@@ -1,262 +1,69 @@
-
 @tailwind base;
 @tailwind components;
-@tailwind utilities
+@tailwind utilities;
 
- 50%{opacity:1} 100%{opacity:0} 
- 50%{opacity:1} 100%{opacity:0} 
- 50%{opacity:1} 100%{opacity:0} 
-
-;
-
+/* ===== Base UI helpers ===== */
 :root { --radius: 16px; }
-
 .card { @apply bg-nn_card/60 backdrop-blur-md border border-nn_border/70 rounded-2xl shadow-nn; }
-.btn-primary { @apply inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-nn_primary hover:bg-nn_primary_hover transition font-semibold; }
-.input { @apply w-full rounded-xl bg-nn_bg2/60 border border-nn_border px-4 py-2 outline-none focus:ring-2 ring-nn_primary/40; }
+.card-lg { @apply card p-6 sm:p-8; }
+.btn-primary { @apply inline-flex items-center justify-center px-4 py-2 rounded-xl bg-nn_primary hover:bg-nn_primary_hover transition font-semibold; }
+.input { @apply w-full rounded-xl bg-nn_bg2/60 border border-nn_border/70 text-white placeholder-nn_muted px-4 py-2 outline-none focus:ring-2 ring-nn_primary/40; }
 .tab { @apply px-4 py-2 font-semibold rounded-xl border border-transparent hover:bg-nn_bg2/60; }
 .tab-active { @apply bg-nn_primary text-white hover:bg-nn_primary; }
-
-/* Pro vibe */
-h1 { @apply font-semibold tracking-tight; }
 .table-head { @apply bg-nn_bg2/70; }
-.fade-in { animation: fade .35s ease both; }
-@keyframes fade { from { opacity:0; transform: translateY(4px) } to { opacity:1; transform: translateY(0) } }
-progress::-webkit-progress-bar { background: theme(colors.nn_bg2/50); border-radius: 9999px; }
-progress::-webkit-progress-value { background: theme(colors.nn_primary); border-radius: 9999px; }
-progress { width: 220px; height: 10px; border-radius: 9999px; }
 
-
-/* Layout polish */
-.section { @apply max-w-5xl mx-auto px-4; }
-.hero { @apply pt-8 pb-2; }
-.hero h1 { @apply text-3xl sm:text-4xl font-semibold; }
-.subtle { @apply text-nn_muted; }
-
-.card-lg { @apply card p-6 sm:p-8; }
-.row { @apply grid grid-cols-1 sm:grid-cols-6 gap-4 items-center; }
-.badge { @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-nn_bg2/60 border border-nn_border text-sm; }
-
-/* Glow accent */
-.glow { box-shadow: 0 0 0px rgba(110,99,255,0.0), 0 20px 50px rgba(110,99,255,0.15); }
-
-
-/* --- Animated night sky --- */
-#stars-layer { position: fixed; inset: 0; pointer-events:none; z-index: 0; }
-.stars { position:absolute; inset:0; background-repeat:repeat; background-size: 200px 200px; opacity:.35; }
-.stars-1 { animation: twinkle 8s linear infinite; background-image: radial-gradient(2px 2px at 20px 30px, #fff 80%, transparent 81%), radial-gradient(1px 1px at 100px 120px, #fff 80%, transparent 81%), radial-gradient(1.5px 1.5px at 150px 80px, #fff 80%, transparent 81%); }
-.stars-2 { animation: twinkle 10s linear infinite reverse; opacity:.25; background-image: radial-gradient(1.5px 1.5px at 60px 90px, #fff 80%, transparent 81%), radial-gradient(1px 1px at 180px 160px, #fff 80%, transparent 81%), radial-gradient(1.5px 1.5px at 120px 30px, #fff 80%, transparent 81%); }
-.stars-3 { animation: twinkle 12s linear infinite; opacity:.2; background-image: radial-gradient(1px 1px at 90px 150px, #fff 80%, transparent 81%), radial-gradient(1px 1px at 30px 170px, #fff 80%, transparent 81%), radial-gradient(1.5px 1.5px at 170px 40px, #fff 80%, transparent 81%); }
- 
-
-
-
-/* Ensure app sits above stars */
-#root { position: relative; z-index: 1; }
-
-/* Illustration card */
-.illustration-card {
-  background: url('/login-hero.jpg') center/cover no-repeat;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 1.5rem;
-}
-.illustration-card img { filter: drop-shadow(0 12px 30px rgba(0,0,0,.45)); }
-
-/* Centering tweaks for login hero */
-.login-hero { min-height: calc(100vh - 40px); display:flex; align-items:center; }
-
-
-/* Cinematic starfield removed */
-
-/* Parallax factors via CSS variables set from mouse/touch */
-.illustration-card {
-  background: url('/login-hero.jpg') center/cover no-repeat;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 1.5rem;
-}
-.parallax-1 { transform: translate(calc(var(--px) * 0.008), calc(var(--py) * 0.008)); }
-.parallax-2 { transform: translate(calc(var(--px) * 0.016), calc(var(--py) * 0.016)); }
-.parallax-3 { transform: translate(calc(var(--px) * 0.024), calc(var(--py) * 0.024)); }
-
-/* Star textures (denser but subtle) */
-.stars-a { background-image:
-  radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.9) 60%, transparent 61%),
-  radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,.8) 60%, transparent 61%),
-  radial-gradient(1.5px 1.5px at 60% 30%, rgba(255,255,255,.7) 60%, transparent 61%),
-  radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,.9) 60%, transparent 61%),
-  radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,.8) 60%, transparent 61%);
-  background-size: 300px 300px;
-  opacity:.35;
-  animation: twinkle-soft 10s ease-in-out infinite;
-}
-.stars-b { background-image:
-  radial-gradient(1px 1px at 25% 30%, rgba(255,255,255,.9) 60%, transparent 61%),
-  radial-gradient(1.5px 1.5px at 65% 80%, rgba(255,255,255,.8) 60%, transparent 61%),
-  radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,.7) 60%, transparent 61%);
-  background-size: 360px 360px;
-  opacity:.28;
-  animation: twinkle-soft 14s ease-in-out infinite reverse;
-}
-.stars-c { background-image:
-  radial-gradient(1.5px 1.5px at 15% 60%, rgba(255,255,255,1) 60%, transparent 61%),
-  radial-gradient(2px 2px at 75% 25%, rgba(255,255,255,.9) 60%, transparent 61%);
-  background-size: 420px 420px;
-  opacity:.22;
-  animation: twinkle-soft 18s ease-in-out infinite;
-}
-@keyframes twinkle-soft { 0%,100%{opacity:.18} 50%{opacity:.46} }
-
-/* Mist & glow layers removed */
-
-/* --- High quality background for the illustration card --- */
-.illustration-card {
-  background: url('/login-hero.jpg') center/cover no-repeat;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 1.5rem;
-}
-
-/* Softer star layers to remove pixel look */
-.stars-a, .stars-b, .stars-c { background-size: 480px 480px; filter: blur(0.2px); }
-@keyframes twinkle-soft { 0%{opacity:.20} 50%{opacity:.42} 100%{opacity:.20} }
-
-
-
-/* Realistic photo background behind the Night Notes logo */
-.illustration-card {
-  background: url('/login-hero.jpg') center/cover no-repeat;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 1.5rem;
-}
-
-
-/* ---- Global animated gradient background (single loop) ---- */
-body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 50%, #000000 100%); background-attachment: fixed; animation: bgShift 28s ease-in-out infinite alternate; }
-
-
-
-/* Circular toggle buttons ("bolletjes") */
-.round-toggle {
-  @apply inline-flex items-center justify-center px-4 py-2 rounded-full border border-nn_border bg-nn_bg2/60;
-  position: relative; font-weight: 600; transition: transform .15s ease, background-color .2s;
-}
-.round-toggle::before {
-  content: ""; width: 10px; height: 10px; border-radius: 9999px; display: inline-block; margin-right: 10px;
-  background: #ff4d4d; box-shadow: 0 0 0 0 rgba(255,77,77,.0);
-}
-.round-toggle.on { @apply bg-nn_primary/20 border-nn_primary; }
-.round-toggle.on::before { background: #22c55e; box-shadow: 0 0 12px 2px rgba(34,197,94,.35); }
-.round-toggle:disabled { opacity:.6; cursor:not-allowed; }
-.round-toggle:active { transform: translateY(1px); }
-
-
-/* ===== Global cinematic night sky (behind everything) ===== */
-#sky-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.sky { position:absolute; inset:0; }
-#root { position: relative; z-index: 1; }
-
-/* Three parallax star layers with soft twinkle */
-.stars { background-repeat: repeat; opacity: .28; }
-
-
- 50%{background-position:50% 30%} 100%{background-position:80% 0%} 
-
-#sky-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-#root { position: relative; z-index: 1; }
-
-.stars { position:absolute; inset:0; background-repeat: repeat; background-size: 420px 420px; opacity:.18; }
-.twinkle { animation: twinkle 6s ease-in-out infinite; }
-.twinkle2 { animation: twinkle2 9s ease-in-out infinite; }
-.twinkle3 { animation: twinkle3 12s ease-in-out infinite; }
-
-/* random dots; three layers with different sizes */
-.layer1 { background-image:
+/* ===== Animated night sky (static position, twinkle only) ===== */
+#stars-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.stars { position:absolute; inset:0; background-repeat:repeat; background-size: 320px 320px; }
+.s1 { opacity:.18; animation: twinkle 6s ease-in-out infinite; background-image:
   radial-gradient(1px 1px at 12% 20%, #fff 70%, transparent 71%),
   radial-gradient(1px 1px at 42% 70%, #fff 70%, transparent 71%),
   radial-gradient(1px 1px at 66% 34%, #fff 70%, transparent 71%),
   radial-gradient(1px 1px at 83% 88%, #fff 70%, transparent 71%),
   radial-gradient(1px 1px at 20% 58%, #fff 70%, transparent 71%);
 }
-.layer2 { background-image:
+.s2 { opacity:.16; animation: twinkle2 9s ease-in-out infinite; background-image:
   radial-gradient(1.2px 1.2px at 15% 40%, #fff 70%, transparent 71%),
   radial-gradient(1.2px 1.2px at 55% 10%, #fff 70%, transparent 71%),
   radial-gradient(1.2px 1.2px at 78% 75%, #fff 70%, transparent 71%),
   radial-gradient(1.2px 1.2px at 32% 85%, #fff 70%, transparent 71%),
   radial-gradient(1.2px 1.2px at 92% 25%, #fff 70%, transparent 71%);
-  opacity:.22;
 }
-.layer3 { background-image:
+.s3 { opacity:.14; animation: twinkle3 12s ease-in-out infinite; background-image:
   radial-gradient(1.6px 1.6px at 8% 12%, #fff 70%, transparent 71%),
   radial-gradient(1.6px 1.6px at 38% 62%, #fff 70%, transparent 71%),
   radial-gradient(1.6px 1.6px at 72% 28%, #fff 70%, transparent 71%),
   radial-gradient(1.6px 1.6px at 88% 66%, #fff 70%, transparent 71%),
   radial-gradient(1.6px 1.6px at 25% 78%, #fff 70%, transparent 71%);
-  opacity:.16;
 }
 
- 50%{opacity:1} 100%{opacity:0}  50%{opacity:.26} 
- 50%{opacity:1} 100%{opacity:0}  50%{opacity:.22} 
+@keyframes twinkle { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
+@keyframes twinkle2 { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
+@keyframes twinkle3 { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
 
-/* Glassy hero art */
-.login-hero-art {
-  position: relative;
-  width: 520px;
-  max-width: 90vw;
-  height: 420px;
-  border-radius: 24px;
-  margin-left: auto;
-  margin-right: auto;
-  background-image: url('/login-hero.jpg');
-  background-size: cover;
-  background-position: center;
-  filter: saturate(105%);
-  box-shadow: 0 20px 50px rgba(0,0,0,.45);
-}
-.login-hero-art::before{
-  content: "";
-  position: absolute;
-  inset: 0;
-  backdrop-filter: blur(18px) saturate(110%);
-  background: rgba(10,14,24,.35);
-  border-radius: inherit;
+/* App above the sky */
+#root { position: relative; z-index: 1; }
+
+/* ===== Page background ===== */
+body {
+  background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 50%, #000 100%);
+  background-attachment: fixed;
 }
 
-
-.stars-fixed { position:absolute; inset:0; background-repeat:repeat; background-size: 400px 400px; animation: starfade 6s ease-in-out infinite alternate; }
- to { opacity:1; } 
-
-
-/* Glass blur overlay inside illustration card */
-.illustration-card { position: relative; }
+/* ===== Illustration card (logo panel) ===== */
+.illustration-card { position: relative; border-radius: 1.5rem; overflow: hidden; background: url('/login-hero.jpg') center/cover no-repeat; }
 .illustration-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: inherit;
-  background-size: cover;
-  background-position: center;
-  filter: blur(22px) saturate(110%);
-  transform: scale(1.03);
-  border-radius: inherit;
-  opacity: 0.9;
+  content:""; position:absolute; inset:0;
+  background-image: inherit; background-size:cover; background-position:center;
+  filter: blur(22px) saturate(115%); transform: scale(1.04);
+  border-radius: inherit; opacity: .88; z-index:0;
 }
-.illustration-card > img { position: relative; z-index: 1; }
+.illustration-card::after { content:""; position:absolute; inset:0; background:rgba(0,0,0,.40); border-radius:inherit; z-index: 0; }
+.illustration-card > img { position: relative; z-index: 1; filter: drop-shadow(0 12px 30px rgba(0,0,0,.45)); }
 
-
-/* Subtle outer glow behind the login card */
+/* ===== Login card glow ===== */
 .login-card { 
   box-shadow:
-    0 10px 30px rgba(0,0,0,.45),
+    0 12px 36px rgba(0,0,0,.50),
     0 0 70px rgba(120,140,255,.18);
- box-shadow: 0 10px 30px rgba(0,0,0,.55), 0 0 50px rgba(88, 111, 255, .25); }
-/* Dark tint above blur */
-.illustration-card::after { content:""; position:absolute; inset:0; background: rgba(0,0,0,.40); border-radius:inherit; z-index:0; }
-.illustration-card > img { position: relative; z-index: 1; }
-
-
-
-
-
+}

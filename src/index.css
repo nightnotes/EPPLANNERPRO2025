@@ -65,14 +65,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 .login-hero { min-height: calc(100vh - 40px); display:flex; align-items:center; }
 
 
-/* ---- Cinematic starfield INSIDE the illustration-card ---- */
-.illustration-card {
-  background: url('/login-hero.jpg') center/cover no-repeat;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 1.5rem;
-}
-.illustration-card .layer { position:absolute; inset:0; pointer-events:none; }
+/* Cinematic starfield removed */
 
 /* Parallax factors via CSS variables set from mouse/touch */
 .illustration-card {
@@ -113,12 +106,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 }
 @keyframes twinkle-soft { 0%,100%{opacity:.18} 50%{opacity:.46} }
 
-/* Mist & glow layers for depth */
-.mist-1 { background: radial-gradient(60% 40% at 70% 20%, rgba(120,140,255,.10), transparent 60%); filter: blur(12px); }
-.mist-2 { background: radial-gradient(50% 30% at 40% 70%, rgba(110,150,255,.08), transparent 60%); filter: blur(16px); }
-.moon-glow { background: radial-gradient(20% 20% at 85% 15%, rgba(255,255,255,
-@media (min-width: 1024px) { .login-visual { height: 520px; } }
-
+/* Mist & glow layers removed */
 
 /* --- High quality background for the illustration card --- */
 .illustration-card {
@@ -305,5 +293,5 @@ body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 5
 .login-card { 
   box-shadow:
     0 10px 30px rgba(0,0,0,.45),
-    0 0 60px rgba(120, 140, 255, .16);
+    0 0 70px rgba(120,140,255,.18);
  box-shadow: 0 10px 30px rgba(0,0,0,.55), 0 0 50px rgba(88, 111, 255, .25); }

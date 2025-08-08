@@ -55,10 +55,10 @@ body {
 .illustration-card::before {
   content:""; position:absolute; inset:0;
   background-image: inherit; background-size:cover; background-position:center;
-  filter: blur(22px) saturate(115%); transform: scale(1.04);
-  border-radius: inherit; opacity: .88; z-index:0;
+  filter: blur(34px) saturate(115%); transform: scale(1.04);
+  border-radius: inherit; opacity: .95; z-index:0;
 }
-.illustration-card::after { content:""; position:absolute; inset:0; background:rgba(0,0,0,.40); border-radius:inherit; z-index: 0; }
+.illustration-card::after { content:""; position:absolute; inset:0; background:rgba(0,0,0,.52); border-radius:inherit; z-index: 0; }
 .illustration-card > img { position: relative; z-index: 1; filter: drop-shadow(0 12px 30px rgba(0,0,0,.45)); }
 
 /* ===== Login card glow ===== */
@@ -96,3 +96,13 @@ body {
 .login-hero h1 { font-size: clamp(28px, 4vw, 48px); line-height: 1.1; }
 .login-hero p { font-size: clamp(14px, 1.9vw, 16px); }
 
+
+/* ===== Global page container ===== */
+.section {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 24px;
+}
+@media (min-width: 1024px) {
+  .section { padding: 32px; }
+}

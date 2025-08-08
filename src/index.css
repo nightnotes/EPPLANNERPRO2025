@@ -124,15 +124,15 @@ body {
   transition: all .2s ease;
 }
 .round-toggle:hover { background: rgba(255,255,255,.10); }
-.round-toggle:focus-visible { outline: 2px solid rgba(130,150,255,.6); outline-offset: 2px; }
+.round-toggle:focus-visible { outline: 2px solid rgba(74,222,128,.6); outline-offset: 2px; }
 
 /* when pressed (state true) */
 .round-toggle[aria-pressed="true"],
 .round-toggle.on {
-  background: #6a6ffb;
+  background: #4ade80;
   color: #fff;
   border-color: rgba(255,255,255,.18);
-  box-shadow: 0 6px 16px rgba(106,111,251,.35), inset 0 1px 0 rgba(255,255,255,.12);
+  box-shadow: 0 6px 16px rgba(74,222,128,.35), inset 0 1px 0 rgba(255,255,255,.12);
 }
 .round-toggle[aria-pressed="true"]:hover,
 .round-toggle.on:hover { filter: brightness(1.05); }

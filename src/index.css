@@ -119,3 +119,31 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 /* Card sizing for the visual on login */
 .login-visual { height: 460px; }
 @media (min-width: 1024px) { .login-visual { height: 520px; } }
+
+
+/* --- High quality background for the illustration card --- */
+.illustration-card {
+  background-image:
+    url('/night-noise.png'),
+    url('/bg-night.svg');
+  background-size: 600px 600px, cover;
+  background-position: center, center;
+  background-repeat: repeat, no-repeat;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 75%, rgba(0,0,0,0.6) 100%);
+  mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 75%, rgba(0,0,0,0.6) 100%);
+}
+
+/* Softer star layers to remove pixel look */
+.stars-a, .stars-b, .stars-c { background-size: 480px 480px; filter: blur(0.2px); }
+@keyframes twinkle-soft { 0%{opacity:.20} 50%{opacity:.42} 100%{opacity:.20} }
+.shoot { filter: blur(0.6px) drop-shadow(0 0 6px rgba(255,255,255,.35)); }
+
+
+/* Realistic photo background behind the Night Notes logo */
+.illustration-card {
+  background-image:
+    url('/night-real.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

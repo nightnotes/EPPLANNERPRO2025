@@ -17,7 +17,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center">
+    <div className="login-hero">
       <div className="section w-full">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           {/* Left: headline + card */}
@@ -46,7 +46,7 @@ export default function Login() {
 
           {/* Right: image */}
           <div className="relative">
-            <div className="rounded-3xl overflow-hidden shadow-nn ring-1 ring-nn_border/60 bg-nn_bg2/60">
+            <div className="rounded-3xl overflow-hidden shadow-nn ring-1 ring-nn_border/60 illustration-card">
               <img src="/logo-nightnotes.png" alt="Night Notes visual" className="w-full h-[420px] object-contain bg-gradient-to-b from-nn_bg1/60 to-nn_bg2/60 p-10" />
             </div>
           </div>

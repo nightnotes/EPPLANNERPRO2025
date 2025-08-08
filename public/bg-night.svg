@@ -1,0 +1,22 @@
+
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b0f26"/>
+      <stop offset="60%" stop-color="#12183b"/>
+      <stop offset="100%" stop-color="#0f1430"/>
+    </linearGradient>
+    <filter id="blur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="800" fill="url(#g1)"/>
+  <!-- distant hills -->
+  <path d="M0,560 C150,520 300,600 450,560 C600,520 750,600 900,560 C1050,520 1200,600 1200,600 L1200,800 L0,800 Z"
+        fill="#0e1330" filter="url(#blur)" opacity="0.8"/>
+  <path d="M0,600 C180,560 320,640 460,600 C640,550 800,650 1000,600 C1100,570 1200,620 1200,640 L1200,800 L0,800 Z"
+        fill="#0c122e" filter="url(#blur)" opacity="0.9"/>
+  <!-- subtle moon glow -->
+  <circle cx="960" cy="140" r="90" fill="#ffffff" opacity="0.08" />
+  <circle cx="960" cy="140" r="52" fill="#d8e6ff" opacity="0.10" />
+</svg>

@@ -18,7 +18,40 @@ function idFor(r: ReleaseRow){ return `${r.date}_${r.artist}` }
 const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
 const addMonths = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth() + n, 1);
 
-export default function ReleasesTable({ rows }: Props) {
+export default function ReleasesTable({
+  const keyOf = (r: any) => `${r.date}__${r.artist}`;
+  const [statusMap, setStatusMap] = useState<Record<string, 'red' | 'green'>>({});
+  const holdTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem('releaseStatus') || '{}');
+    const next = { ...saved };
+    rows.forEach((r: any) => {
+      const k = keyOf(r);
+      if (!next[k]) next[k] = (r.status as any) || 'red';
+    });
+    setStatusMap(next);
+  }, [rows]);
+
+  useEffect(() => {
+    localStorage.setItem('releaseStatus', JSON.stringify(statusMap));
+  }, [statusMap]);
+
+  const makeGreen = (k: string) => setStatusMap(m => ({ ...m, [k]: 'green' }));
+  const cancelHold = () => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+  };
+  const startHoldToReset = (k: string) => {
+    cancelHold();
+    holdTimer.current = window.setTimeout(() => {
+      setStatusMap(m => ({ ...m, [k]: 'red' }));
+      holdTimer.current = null;
+    }, 2000);
+  };
+ rows }: Props) {
   const states = useMemo(()=>loadStates(), [rows.length])
 
   function setDone(id: string, val: boolean) {

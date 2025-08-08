@@ -14,6 +14,10 @@ function saveStates(s: Record<string, TaskState>) {
 }
 function idFor(r: ReleaseRow){ return `${r.date}_${r.artist}` }
 
+
+const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
+const addMonths = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth() + n, 1);
+
 export default function ReleasesTable({ rows }: Props) {
   const states = useMemo(()=>loadStates(), [rows.length])
 

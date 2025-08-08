@@ -18,7 +18,7 @@ const DISTROKID_ORDER = [
 
 const WHO_BY_ARTIST: Record<string, "Nuno"|"Martijn"> = {
   "Dreamflow":"Nuno","Poluz":"Martijn","Doris Lost":"Nuno","Eternal":"Martijn","Slaapmutsje":"Nuno","ZizZa":"Martijn","Sleepy Taes":"Nuno",
-  "Muted Mind":"Martijn","Swooshy":"Nuno","Evelyn Winter":"Martijn","Krople":"Martijn","Katty":"Martijn","Sophia Vale":"Martijn","Domindo Nuni":"Martijn",
+  "Muted Mind":"Nuno","Swooshy":"Nuno","Evelyn Winter":"Martijn","Krople":"Martijn","Katty":"Martijn","Sophia Vale":"Martijn","Domindo Nuni":"Martijn",
   "Motionless":"Martijn","Loomy":"Nuno","Eleanor Moon":"Nuno","Luna Nights":"Martijn","Ava Willow":"Martijn","Sleepy Delrow":"Nuno","Lila Serene":"Nuno",
   "Soft Dawn":"Nuno","Nunery Dream":"Nuno","Celestine Viora":"Nuno","Ludo Legato":"Martijn"
 };

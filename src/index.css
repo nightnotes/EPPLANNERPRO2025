@@ -164,8 +164,3 @@ body {
 .status-dot.red{ background:#ef4444; }
 .status-dot.green{ background:#22c55e; }
 .status-dot:hover{ filter:brightness(1.05); }
-
-/* EPChecklist fixes */
-.next-task-actions{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; max-width:100%; padding-right:6px; }
-@media (max-width:1024px){ .next-task-actions{ justify-content:flex-start; } }
-.round-toggle{ min-width:84px; }

@@ -11,17 +11,32 @@ export default function Home() {
   // Current month state
   const [currentMonth, setCurrentMonth] = useState<Date>(startOfMonth(new Date()))
 
-  // Build full schedule once, then filter per month
+  // Build full schedule once
   const allRows = useMemo(
     () => generateSchedule(new Date('2025-08-25'), new Date('2026-12-31')),
     []
   )
 
+  // Build month options from data
+  const monthOptions = useMemo(() => {
+    const set = new Set<string>()
+    for (const r of allRows) {
+      set.add(r.date.slice(0, 7)) // YYYY-MM
+    }
+    return Array.from(set).sort()
+  }, [allRows])
+
   const monthKey = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`
+
   const rows = useMemo(
     () => allRows.filter(r => r.date.startsWith(monthKey)),
     [allRows, monthKey]
   )
+
+  const onSelectMonth = (key: string) => {
+    const [y, m] = key.split('-').map(Number)
+    setCurrentMonth(new Date(y, (m ?? 1) - 1, 1))
+  }
 
   return (
     <>
@@ -39,9 +54,19 @@ export default function Home() {
             >
               ◀
             </button>
-            <div className="px-3 py-1.5 rounded-xl bg-nn_bg2/60 border border-nn_border/70 font-semibold">
-              {currentMonth.toLocaleString('nl-NL', { month: 'long', year: 'numeric' })}
-            </div>
+
+            <select
+              className="rounded-xl bg-nn_bg2/60 border border-nn_border/70 px-3 py-1.5 font-semibold"
+              value={monthKey}
+              onChange={(e) => onSelectMonth(e.target.value)}
+            >
+              {monthOptions.map(key => (
+                <option key={key} value={key}>
+                  {new Date(`${key}-01`).toLocaleString('nl-NL', { month: 'long', year: 'numeric' })}
+                </option>
+              ))}
+            </select>
+
             <button
               className="btn-primary px-3 py-1.5"
               onClick={() => setCurrentMonth(m => addMonths(m, 1))}

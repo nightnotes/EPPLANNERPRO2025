@@ -42,7 +42,7 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 .stars-2 { animation: twinkle 10s linear infinite reverse; opacity:.25; background-image: radial-gradient(1.5px 1.5px at 60px 90px, #fff 80%, transparent 81%), radial-gradient(1px 1px at 180px 160px, #fff 80%, transparent 81%), radial-gradient(1.5px 1.5px at 120px 30px, #fff 80%, transparent 81%); }
 .stars-3 { animation: twinkle 12s linear infinite; opacity:.2; background-image: radial-gradient(1px 1px at 90px 150px, #fff 80%, transparent 81%), radial-gradient(1px 1px at 30px 170px, #fff 80%, transparent 81%), radial-gradient(1.5px 1.5px at 170px 40px, #fff 80%, transparent 81%); }
  
-@keyframes twinkle { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} } 50%{opacity:.42} 100%{opacity:.18} }
+ 50%{opacity:1} 100%{opacity:0} } 50%{opacity:.42} 100%{opacity:.18} }
 
 
 
@@ -254,3 +254,6 @@ body { background: radial-gradient(1200px 800px at 10% 0%, #07090F 0%, #03050A 5
 /* Dark tint above blur */
 .illustration-card::after { content:""; position:absolute; inset:0; background: rgba(0,0,0,.40); border-radius:inherit; z-index:0; }
 .illustration-card > img { position: relative; z-index: 1; }
+
+
+@keyframes twinkle { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }

@@ -46,8 +46,21 @@ export default function Login() {
 
           {/* Right: image */}
           <div className="relative">
-            <div className="rounded-3xl overflow-hidden shadow-nn ring-1 ring-nn_border/60 illustration-card">
-              <img src="/logo-nightnotes.png" alt="Night Notes visual" className="w-full h-[420px] object-contain bg-gradient-to-b from-nn_bg1/60 to-nn_bg2/60 p-10" />
+            <div className="rounded-3xl overflow-hidden shadow-nn ring-1 ring-nn_border/60 illustration-card login-visual" onMouseMove={(e)=>{ const r=(e.currentTarget as HTMLDivElement).getBoundingClientRect(); (e.currentTarget as HTMLDivElement).style.setProperty("--px", String((e.clientX - (r.left + r.width/2)))); (e.currentTarget as HTMLDivElement).style.setProperty("--py", String((e.clientY - (r.top + r.height/2))); }} onTouchMove={(e)=>{ const t=e.touches[0]; const el=(e.currentTarget as HTMLDivElement); const r=el.getBoundingClientRect(); el.style.setProperty("--px", String((t.clientX - (r.left + r.width/2)))); el.style.setProperty("--py", String((t.clientY - (r.top + r.height/2))); }}>
+              
+{/* layered cinematic background */}
+<div className="layer stars-a parallax-1"></div>
+<div className="layer stars-b parallax-2"></div>
+<div className="layer stars-c parallax-3"></div>
+<div className="layer mist-1 parallax-2"></div>
+<div className="layer mist-2 parallax-3"></div>
+<div className="layer moon-glow parallax-1"></div>
+<div className="layer shoot shoot-1 glow"></div>
+<div className="layer shoot shoot-2 glow"></div>
+<div className="layer shoot shoot-3 glow"></div>
+
+<img src="/logo-nightnotes.png" alt="Night Notes visual" className="w-full h-full object-contain p-10" />
+
             </div>
           </div>
         </div>

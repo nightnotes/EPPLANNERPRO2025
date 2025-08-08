@@ -58,3 +58,64 @@ progress { width: 220px; height: 10px; border-radius: 9999px; }
 
 /* Centering tweaks for login hero */
 .login-hero { min-height: calc(100vh - 40px); display:flex; align-items:center; }
+
+
+/* ---- Cinematic starfield INSIDE the illustration-card ---- */
+.illustration-card { position: relative; overflow: hidden; }
+.illustration-card .layer { position:absolute; inset:0; pointer-events:none; }
+
+/* Parallax factors via CSS variables set from mouse/touch */
+.illustration-card { --px: 0; --py: 0; }
+.parallax-1 { transform: translate(calc(var(--px) * 0.008), calc(var(--py) * 0.008)); }
+.parallax-2 { transform: translate(calc(var(--px) * 0.016), calc(var(--py) * 0.016)); }
+.parallax-3 { transform: translate(calc(var(--px) * 0.024), calc(var(--py) * 0.024)); }
+
+/* Star textures (denser but subtle) */
+.stars-a { background-image:
+  radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.9) 60%, transparent 61%),
+  radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,.8) 60%, transparent 61%),
+  radial-gradient(1.5px 1.5px at 60% 30%, rgba(255,255,255,.7) 60%, transparent 61%),
+  radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,.9) 60%, transparent 61%),
+  radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,.8) 60%, transparent 61%);
+  background-size: 300px 300px;
+  opacity:.35;
+  animation: twinkle-soft 10s ease-in-out infinite;
+}
+.stars-b { background-image:
+  radial-gradient(1px 1px at 25% 30%, rgba(255,255,255,.9) 60%, transparent 61%),
+  radial-gradient(1.5px 1.5px at 65% 80%, rgba(255,255,255,.8) 60%, transparent 61%),
+  radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,.7) 60%, transparent 61%);
+  background-size: 360px 360px;
+  opacity:.28;
+  animation: twinkle-soft 14s ease-in-out infinite reverse;
+}
+.stars-c { background-image:
+  radial-gradient(1.5px 1.5px at 15% 60%, rgba(255,255,255,1) 60%, transparent 61%),
+  radial-gradient(2px 2px at 75% 25%, rgba(255,255,255,.9) 60%, transparent 61%);
+  background-size: 420px 420px;
+  opacity:.22;
+  animation: twinkle-soft 18s ease-in-out infinite;
+}
+@keyframes twinkle-soft { 0%,100%{opacity:.18} 50%{opacity:.46} }
+
+/* Mist & glow layers for depth */
+.mist-1 { background: radial-gradient(60% 40% at 70% 20%, rgba(120,140,255,.10), transparent 60%); filter: blur(12px); }
+.mist-2 { background: radial-gradient(50% 30% at 40% 70%, rgba(110,150,255,.08), transparent 60%); filter: blur(16px); }
+.moon-glow { background: radial-gradient(20% 20% at 85% 15%, rgba(255,255,255,.10), transparent 60%); filter: blur(6px); }
+
+/* Shooting stars (inside card only) */
+.shoot { position:absolute; height:2px; width:28%; left:-35%; top:20%; opacity:0;
+         background: linear-gradient(90deg, rgba(255,255,255,.85), rgba(255,255,255,0));
+         filter: drop-shadow(0 0 6px rgba(255,255,255,.5)); }
+.shoot.glow { box-shadow: 0 0 20px rgba(255,255,255,.15); }
+@keyframes dash { 0% { transform: translateX(0); opacity:0; }
+                  10% { opacity:.7; }
+                  40% { opacity:.15; }
+                  100% { transform: translateX(180%); opacity:0; } }
+.shoot-1 { top:22%; animation: dash 18s linear infinite 4s; }
+.shoot-2 { top:48%; animation: dash 24s linear infinite 12s; }
+.shoot-3 { top:68%; animation: dash 28s linear infinite 20s; }
+
+/* Card sizing for the visual on login */
+.login-visual { height: 460px; }
+@media (min-width: 1024px) { .login-visual { height: 520px; } }

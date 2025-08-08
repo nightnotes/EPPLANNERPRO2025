@@ -76,68 +76,75 @@ persist(updated, key==='done' && updated.done)
   const lastId = getLastCompleted()
   const last = rows.find(r=>r.id===lastId)
 
-  return (
+  
+function restoreLast(){
+  if(!last) return;
+  // Zet de laatste taak terug in de queue
+  const updated = [...tasks, { ...last, done:false }];
+  setTasks(updated);
+  setLast(null);
+}
+
+return (
     <div>
       <Navbar />
-      <div className="section pt-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">EP Checklist</h1>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-nn_muted">{doneCount}/{total}</span>
-            <progress max={100} value={pct} aria-label="voortgang"></progress>
+      
+<div className="section pt-6">
+  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+    {/* Sidebar quick links */}
+    <aside className="md:col-span-3">
+      <div className="card p-4 sticky top-20">
+        <div className="text-sm text-nn_muted mb-2">Snel naar</div>
+        <div className="flex flex-col gap-2">
+          <a className="tab tab-active text-center" href="https://distrokid.com/new/" target="_blank" rel="noreferrer">DistroKid</a>
+          <a className="tab tab-active text-center" href="https://artist.amuse.io/studio" target="_blank" rel="noreferrer">Amuse</a>
+          <a className="tab tab-active text-center" href="https://mijn.bumastemra.nl/" target="_blank" rel="noreferrer">Buma/Stemra</a>
+        </div>
+      </div>
+    </aside>
+
+    {/* Main content */}
+    <main className="md:col-span-9 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">EP Checklist</h1>
+        <div className="flex items-center gap-3 text-sm">
+          <span className="text-nn_muted">{doneCount}/{total}</span>
+          <progress max={100} value={pct} aria-label="voortgang"></progress>
+        </div>
+      </div>
+
+      <div className="card p-5 fade-in">
+        <div className="text-sm text-nn_muted mb-3">Volgende taak voor <b>{user}</b></div>
+        {!next ? (
+          <div className="text-nn_muted">Geen openstaande taken 🎉</div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 items-center">
+            <div className="lg:col-span-4 font-medium">{next.date} — <b>{next.artist}</b></div>
+            <div className="lg:col-span-2">{next.who}</div>
+            <div className="lg:col-span-2">{next.distribution}</div>
+            <div className="lg:col-span-4">
+              <div className="flex justify-center gap-3">
+                <button className={"round-toggle " + (next.splits ? "on" : "")} onClick={()=>toggle('splits')} aria-pressed={next.splits}>Splits</button>
+                <button className={"round-toggle " + (next.buma ? "on" : "")} onClick={()=>toggle('buma')} aria-pressed={next.buma}>Buma/Stemra</button>
+                <button className={"round-toggle " + (next.done ? "on" : "")} disabled={!(next.splits && next.buma)} onClick={()=>toggle('done')} aria-pressed={next.done}>Klaar</button>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+      </div>
 
+      <div className="card p-5 fade-in">
+        <div className="font-semibold mb-2">Laatst afgerond</div>
         
-<div className="card-lg fade-in">
-  <div className="text-sm text-nn_muted mb-3">Snel naar</div>
-  <div className="flex items-center gap-2">
-    <a className="tab tab-active" href="https://distrokid.com/new/" target="_blank" rel="noreferrer">DistroKid</a>
-    <a className="tab tab-active" href="https://artist.amuse.io/studio" target="_blank" rel="noreferrer">Amuse</a>
-    <a className="tab tab-active" href="https://mijn.bumastemra.nl/" target="_blank" rel="noreferrer">Buma/Stemra</a>
+{!last ? <div className="text-nn_muted">Nog niks afgerond.</div> :
+  <div className="flex items-center justify-between">
+    <span>{last.date} — <b>{last.artist}</b> ({last.distribution})</span>
+    <button
+      className="px-3 py-1 rounded-full bg-nn_accent text-white hover:opacity-90 text-sm"
+      onClick={()=>restoreLast()}
+    >
+      Herstel
+    </button>
   </div>
-</div>
-
-<div className="card-lg fade-in">
-  <div className="text-sm text-nn_muted mb-3">Volgende taak voor <b>{user}</b></div>
-  {!next ? (
-    <div className="text-nn_muted">Geen openstaande taken 🎉</div>
-  ) : (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 items-center">
-      <div className="md:col-span-4 flex items-center gap-2">
-        <span className="text-sm subtle">Datum</span>
-        <div className="font-medium">{next.date}</div>
-      </div>
-      <div className="md:col-span-4 truncate">
-        <div className="text-sm subtle">Artiest</div>
-        <div className="font-semibold truncate">{next.artist}</div>
-      </div>
-      <div className="md:col-span-2">
-        <div className="text-sm subtle">Wie</div>
-        <div>{next.who}</div>
-      </div>
-      <div className="md:col-span-2">
-        <div className="text-sm subtle">Distributie</div>
-        <div>{next.distribution}</div>
-      </div>
-
-      <div className="md:col-span-12 flex flex-wrap items-center gap-4 pt-1">
-        <button className={"round-toggle " + (next.splits ? "on" : "")} onClick={()=>toggle('splits')} aria-pressed={next.splits}>Splits</button>
-        <button className={"round-toggle " + (next.buma ? "on" : "")} onClick={()=>toggle('buma')} aria-pressed={next.buma}>Buma/Stemra</button>
-        <button className={"round-toggle " + (next.done ? "on" : "")} disabled={!(next.splits && next.buma)} onClick={()=>toggle('done')} aria-pressed={next.done}>Klaar</button>
-      </div>
-    </div>
-  )}
-</div>
-
-<div className="card-lg fade-in">
-  <div className="font-semibold mb-2">Laatst afgerond</div>
-
-          {!last ? <div className="text-nn_muted">Nog niks afgerond.</div> :
-            <div>{last.date} — <b>{last.artist}</b> ({last.distribution})</div>
-          }
-        </div>
-      </div>
-    </div>
-  )
 }
+

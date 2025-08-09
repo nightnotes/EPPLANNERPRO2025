@@ -1,5 +1,5 @@
 
-import { useMemo, useRef, useEffect } from 'react'
+import { useMemo, useRef, useEffect, useState } from 'react'
 import { ReleaseRow } from '../utils/schedule'
 
 type Props = { rows: ReleaseRow[] }
@@ -29,6 +29,12 @@ export default function ReleasesTable({ rows }: Props) {
       }
     })();
   }, [])
+  useEffect(()=>{
+    const onStorage = () => setRenderTick(t=>t+1);
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [])
+
 
 
   function setDone(id: string, val: boolean) {
@@ -36,6 +42,7 @@ export default function ReleasesTable({ rows }: Props) {
     s[id] = { ...(s[id]||{}), done: val }
     saveStates(s)
     saveReleasesStatus(s)
+    setRenderTick(t=>t+1)
     // force a repaint by updating a benign key (cheap trick)
     requestAnimationFrame(()=>window.dispatchEvent(new Event('storage')))
   }

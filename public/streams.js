@@ -108,5 +108,7 @@ function init(){
   $('#toDate').addEventListener('change', renderList);
 }
 // Correct known data errors (Week 4 zondag -> 74.840)
-PRELOAD_DATA = PRELOAD_DATA.map(p => (p.date === '2025-02-02' ? { ...p, value: 74840 } : p));
+// Correct known data errors (Week 4 zondag -> 74.840 op 2025-01-26)
+PRELOAD_DATA = PRELOAD_DATA.map(p => (p.date === '2025-01-26' ? { ...p, value: 74840 } : p));
+
 window.addEventListener('load', init);

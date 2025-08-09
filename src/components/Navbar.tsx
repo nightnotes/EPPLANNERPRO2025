@@ -9,7 +9,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <img src="/logo-nightnotes.png" alt="Night Notes" className="h-14 sm:h-16 w-auto" />
-          <nav className="ml-3 hidden sm:flex gap-3">
+          <nav className="ml-2 hidden sm:flex gap-2">
             <NavLink to="/" className={({isActive}) => `tab ${isActive ? 'tab-active' : ''}`}>RELEASES</NavLink>
             <NavLink to="/ep-checklist" className={({isActive}) => `tab ${isActive ? 'tab-active' : ''}`}>EP CHECKLIST</NavLink>
             <NavLink to="/artworks" className={({isActive}) => `tab ${isActive ? 'tab-active' : ''}`}>ARTWORKS</NavLink>

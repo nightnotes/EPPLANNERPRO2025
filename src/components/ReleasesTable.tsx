@@ -30,12 +30,7 @@ export default function ReleasesTable({ rows }: Props) {
       }
     })();
   }, [])
-  useEffect(()=>{
-    const onStorage = () => setStates(loadStates());
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, [])
-
+  useEffect(()=>{ const onStorage = ()=> setStates(loadStates()); window.addEventListener('storage', onStorage); return ()=> window.removeEventListener('storage', onStorage); }, [])
 
 
   function setDone(id: string, done: boolean) {
@@ -43,7 +38,8 @@ export default function ReleasesTable({ rows }: Props) {
   const s = { ...loadStates(), [id]: done }
   saveStates(s)
   saveReleasesStatus(s)
-}), done: val }
+}
+), done: val }
     saveStates(s)
     saveReleasesStatus(s)
     // force a repaint by updating a benign key (cheap trick)

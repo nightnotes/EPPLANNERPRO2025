@@ -1,0 +1,28 @@
+
+    :root {{ --bg:#0b0f17; --fg:#e6ecf5; --muted:#93a3b8; --card:#101726; --line:#1f2a3a; --chip:#0d1320; --accent:#3b82f6; }}
+    * {{ box-sizing: border-box; }}
+    body {{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:var(--fg); margin:0; padding:24px; }}
+    .wrap {{ max-width: 1100px; margin: 0 auto; }}
+    h1 {{ font-size: 28px; margin: 0 0 8px; }}
+    p  {{ color:#b7c1d1; margin: 6px 0; }}
+    .row {{ display:flex; gap:12px; flex-wrap: wrap; margin: 16px 0 24px; align-items: center; }}
+    button {{ padding:10px 14px; border:0; border-radius: 12px; cursor:pointer; font-weight:600; }}
+    .primary {{ background:var(--accent); color:white; }}
+    .secondary {{ background:#1f2937; color:var(--fg); }}
+    .ghost {{ background:transparent; border:1px solid var(--line); color:var(--fg); }}
+    .card {{ background:var(--card); border:1px solid var(--line); border-radius: 16px; padding: 16px; margin-top: 16px; }}
+    code, kbd {{ background:var(--chip); padding:2px 6px; border-radius:6px; }}
+    .list {{ display:grid; grid-template-columns: 1fr; gap:10px; }}
+    .muted {{ font-size:12px; color:var(--muted); }}
+    input[type="number"]{{ width:110px; padding:8px 10px; border-radius:10px; border:1px solid var(--line); background:var(--chip); color:var(--fg); }}
+    input[type="date"]{{ padding:8px 10px; border-radius:10px; border:1px solid var(--line); background:var(--chip); color:var(--fg); }}
+    a {{ color:#93c5fd; }}
+    .artist-row {{ display:grid; grid-template-columns: minmax(220px, 1fr) 150px 180px 1fr; gap:12px; align-items:center;
+                  background:var(--chip); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }}
+    .artist-meta {{ display:flex; flex-direction: column; gap:2px; }}
+    .artist-actions {{ display:flex; gap:10px; align-items:center; justify-content:flex-end; }}
+    .pill {{ border:1px solid #253146; border-radius: 10px; padding: 8px 12px; text-decoration: none; }}
+    .totalbar {{ display:flex; gap:16px; align-items:center; flex-wrap:wrap; }}
+    .totalbadge {{ background:#0f172a; border:1px solid var(--line); padding:10px 12px; border-radius:12px; }}
+    .chart-wrap {{ padding: 14px 0; min-height: 360px; }}
+  

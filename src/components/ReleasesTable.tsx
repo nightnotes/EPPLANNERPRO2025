@@ -13,9 +13,6 @@ function saveStates(s: Record<string, TaskState>) {
 }
 function idFor(r: ReleaseRow){ return `${r.date}_${r.artist}` }
 
-const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
-const addMonths = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth() + n, 1);
-
 export default function ReleasesTable({ rows }: Props) {
   const [states, setStates] = useState<Record<string, TaskState>>({})
 
@@ -41,14 +38,11 @@ export default function ReleasesTable({ rows }: Props) {
   }, [])
 
   function setDone(id: string, done: boolean) {
-    // Merge into current record for this id (preserve other fields)
     const current = loadStates();
     const prev = current[id] || {};
     const nextAll = { ...current, [id]: { ...prev, done } };
-    // Persist and update UI immediately
     saveStates(nextAll);
     setStates(nextAll);
-    // Cloud save (fire-and-forget)
     saveReleasesStatus(nextAll);
   }
 
@@ -56,11 +50,11 @@ export default function ReleasesTable({ rows }: Props) {
     const timer = useRef<number | null>(null)
     const start = () => {
       if (timer.current) return
-      // 3s long-press (kan naar 2s als gewenst)
+      // 2s long-press for undo
       timer.current = window.setTimeout(() => {
         setDone(id, false)
         timer.current = null
-      }, 3000)
+      }, 2000)
     }
     const cancel = () => {
       if (timer.current) {
@@ -106,7 +100,7 @@ export default function ReleasesTable({ rows }: Props) {
                   <td className="px-4 py-2">
                     <span
                       className={"inline-block w-3 h-3 rounded-full cursor-pointer select-none " + (green ? "bg-green-500" : "bg-red-500")}
-                      title={green ? "Ingedrukt houden om ongedaan te maken" : "Nog niet klaar"}
+                      title={green ? "Houd 2s ingedrukt voor undo" : "Klik om te markeren"}
                       onClick={()=>setDone(id, !green)} {...useLongPress(id)}
                     />
                   </td>

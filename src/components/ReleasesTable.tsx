@@ -1,5 +1,4 @@
-
-import { useMemo, useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { ReleaseRow } from '../utils/schedule'
 
 type Props = { rows: ReleaseRow[] }
@@ -14,48 +13,50 @@ function saveStates(s: Record<string, TaskState>) {
 }
 function idFor(r: ReleaseRow){ return `${r.date}_${r.artist}` }
 
-
 const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
 const addMonths = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth() + n, 1);
 
 export default function ReleasesTable({ rows }: Props) {
-  const [states, setStates] = useState<Record<string, boolean>>({})
+  const [states, setStates] = useState<Record<string, TaskState>>({})
+
+  // Load from local on mount / when rows change
   useEffect(()=>{ setStates(loadStates()) }, [rows.length])
+
+  // Load from cloud on mount
   useEffect(()=>{
     (async ()=>{
       const cloud = await loadReleasesStatus();
       if (cloud && typeof cloud === 'object') {
         saveStates(cloud);
-        requestAnimationFrame(()=>window.dispatchEvent(new Event('storage')));
+        setStates(cloud);
       }
     })();
   }, [])
-  useEffect(()=>{ const onStorage = ()=> setStates(loadStates()); window.addEventListener('storage', onStorage); return ()=> window.removeEventListener('storage', onStorage); }, [])
 
+  // Sync across tabs / forced updates
+  useEffect(()=>{
+    const onStorage = () => setStates(loadStates());
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [])
 
   function setDone(id: string, done: boolean) {
-  setStates(prev => ({ ...prev, [id]: done }))
-  const s = { ...loadStates(), [id]: done }
-  saveStates(s)
-  saveReleasesStatus(s)
-}
-))
-  const s = { ...loadStates(), [id]: done }
-  saveStates(s)
-  saveReleasesStatus(s)
-}
-), done: val }
-    saveStates(s)
-    saveReleasesStatus(s)
-    // force a repaint by updating a benign key (cheap trick)
-    requestAnimationFrame(()=>window.dispatchEvent(new Event('storage')))
+    // Merge into current record for this id (preserve other fields)
+    const current = loadStates();
+    const prev = current[id] || {};
+    const nextAll = { ...current, [id]: { ...prev, done } };
+    // Persist and update UI immediately
+    saveStates(nextAll);
+    setStates(nextAll);
+    // Cloud save (fire-and-forget)
+    saveReleasesStatus(nextAll);
   }
 
   function useLongPress(id: string) {
     const timer = useRef<number | null>(null)
     const start = () => {
       if (timer.current) return
-      // 3s long-press
+      // 3s long-press (kan naar 2s als gewenst)
       timer.current = window.setTimeout(() => {
         setDone(id, false)
         timer.current = null
@@ -93,9 +94,9 @@ export default function ReleasesTable({ rows }: Props) {
             {rows.length === 0 ? (
               <tr><td className="px-4 py-6 text-nn_muted" colSpan={5}>Geen items.</td></tr>
             ) : rows.map((r, i) => {
-              const s = states[idFor(r)]
-              const green = !!s?.done
               const id = idFor(r)
+              const s = states[id]
+              const green = !!s?.done
               return (
                 <tr key={i} className="border-t border-nn_border/50 hover:bg-nn_bg2/30">
                   <td className="px-4 py-2 whitespace-nowrap">{r.date}</td>
@@ -106,7 +107,7 @@ export default function ReleasesTable({ rows }: Props) {
                     <span
                       className={"inline-block w-3 h-3 rounded-full cursor-pointer select-none " + (green ? "bg-green-500" : "bg-red-500")}
                       title={green ? "Ingedrukt houden om ongedaan te maken" : "Nog niet klaar"}
-                      onClick={()=>setDone(id, !green)} onClick={()=>setDone(id, !green)} onClick={()=>setDone(id, !green)} {...useLongPress(id)}
+                      onClick={()=>setDone(id, !green)} {...useLongPress(id)}
                     />
                   </td>
                 </tr>
@@ -117,4 +118,22 @@ export default function ReleasesTable({ rows }: Props) {
       </div>
     </div>
   )
+}
+
+// === Cloud sync helpers ===
+async function loadReleasesStatus(): Promise<Record<string, TaskState> | null> {
+  try {
+    const r = await fetch('/.netlify/functions/kv-store?key=releases-status');
+    const j = await r.json();
+    return j.value || null;
+  } catch { return null; }
+}
+async function saveReleasesStatus(obj: Record<string, TaskState>) {
+  try {
+    await fetch('/.netlify/functions/kv-store?key=releases-status', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(obj)
+    });
+  } catch {}
 }

@@ -1,5 +1,5 @@
 
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useEffect } from 'react'
 import { ReleaseRow } from '../utils/schedule'
 
 type Props = { rows: ReleaseRow[] }
@@ -20,11 +20,22 @@ const addMonths = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth()
 
 export default function ReleasesTable({ rows }: Props) {
   const states = useMemo(()=>loadStates(), [rows.length])
+  useEffect(()=>{
+    (async ()=>{
+      const cloud = await loadReleasesStatus();
+      if (cloud && typeof cloud === 'object') {
+        saveStates(cloud);
+        requestAnimationFrame(()=>window.dispatchEvent(new Event('storage')));
+      }
+    })();
+  }, [])
+
 
   function setDone(id: string, val: boolean) {
     const s = loadStates()
     s[id] = { ...(s[id]||{}), done: val }
     saveStates(s)
+    saveReleasesStatus(s)
     // force a repaint by updating a benign key (cheap trick)
     requestAnimationFrame(()=>window.dispatchEvent(new Event('storage')))
   }
@@ -84,7 +95,7 @@ export default function ReleasesTable({ rows }: Props) {
                     <span
                       className={"inline-block w-3 h-3 rounded-full cursor-pointer select-none " + (green ? "bg-green-500" : "bg-red-500")}
                       title={green ? "Ingedrukt houden om ongedaan te maken" : "Nog niet klaar"}
-                      {...useLongPress(id)}
+                      onClick={()=>setDone(id, !green)} {...useLongPress(id)}
                     />
                   </td>
                 </tr>

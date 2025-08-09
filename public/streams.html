@@ -1,51 +1,37 @@
+
 <!doctype html>
 <html lang="nl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Night Notes – Streams Launcher + Totals + Grafiek</title>
+  <title>Night Notes — Streams Launcher + Totals</title>
   <link rel="stylesheet" href="/streams.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <script defer src="/streams.js"></script>
 </head>
 <body>
   <div class="wrap">
     <h1>Night Notes — Streams Launcher + Totals</h1>
-    <p>Open met één klik alle <em>Audience → Stats</em> dashboards per artiest met een datumrange. Noteer hieronder het totale aantal streams van gisteren; de grafiek daaronder groeit automatisch mee. <span class="muted">(Geen scraping; je moet in Spotify for Artists ingelogd zijn.)</span></p>
-
     <div class="card">
       <div class="row">
-        <button class="primary" onclick="openAll()">Open alle dashboards</button>
-        <button class="secondary" onclick="openSelected()">Open geselecteerde</button>
-
-        <label class="muted">Dagen terug:
-          <input id="daysBack" type="number" value="30" min="1" max="365">
-        </label>
-
-        <label class="muted">Datum (toDate):
-          <input id="toDate" type="date">
-        </label>
-
-        <button class="ghost" onclick="setYesterday()">Set op gisteren</button>
-        <button class="ghost" onclick="downloadCSV()">Download CSV</button>
+        <button class="btn-primary" id="openAll">Open alle dashboards</button>
+        <button class="btn" id="openSelected">Open geselecteerde</button>
+        <label class="muted">Dagen terug: <input id="daysBack" type="number" value="30" min="1" max="365"></label>
+        <label class="muted">Datum (toDate): <input id="toDate" type="date" placeholder="dd-mm-jjjj"></label>
+        <button class="btn" id="setYesterday">Set op gisteren</button>
+        <button class="btn" id="downloadCSV">Download CSV</button>
       </div>
-
       <div class="totalbar">
         <div class="totalbadge"><strong>Totaal streams</strong>: <span id="grandTotal">0</span></div>
       </div>
-
-      <div class="list" id="artistList" style="margin-top:14px;"></div>
-      <p class="muted" style="margin-top:10px">
-        Bewerk de artiestenlijst in dit bestand indien nodig. Je kunt ook een vaste <code>fromDate</code> zetten door <code>FIXED_FROM</code> in te vullen.
-      </p>
+      <div class="list" id="artistList"></div>
+      <p class="muted">Bewerk <code>public/artists.json</code> om artiesten toe te voegen. Geen scraping — je moet ingelogd zijn bij Spotify for Artists.</p>
     </div>
-
     <div class="card chart-wrap">
       <h3>Historie & trend</h3>
-      <p class="muted">Dagtotalen (lijn), 7-daags gemiddelde (lijn), en weekgemiddelde (stap-lijn per ISO-week). Hover voor exacte waardes.</p>
+      <p class="muted">Dagtotalen (lijn), 7-daags gemiddelde (lijn), weekgemiddelde (stap-lijn). Hover voor exacte waardes.</p>
       <div style="height:320px"><canvas id="streamsChart"></canvas></div>
     </div>
   </div>
-
-  <script src="/streams.js"></script>
 </body>
 </html>

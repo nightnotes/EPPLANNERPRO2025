@@ -6,6 +6,7 @@ import Home from './Home'
 import EPChecklist from './EPChecklist'
 import Artworks from './Artworks'
 import Ads from './Ads'
+import Streams from './Streams'
 
 export default function App() {
   const user = getUser()
@@ -15,6 +16,7 @@ export default function App() {
     <Route path="/ep-checklist" element={<EPChecklist />} />
     <Route path="/artworks" element={<Artworks />} />
     <Route path="/ads" element={<Ads />} />
+    <Route path="/streams" element={<Streams />} />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 }

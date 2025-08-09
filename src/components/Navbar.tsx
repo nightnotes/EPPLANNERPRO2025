@@ -14,6 +14,7 @@ export default function Navbar() {
             <NavLink to="/ep-checklist" className={({isActive}) => `tab ${isActive ? 'tab-active' : ''}`}>EP CHECKLIST</NavLink>
             <NavLink to="/artworks" className={({isActive}) => `tab ${isActive ? 'tab-active' : ''}`}>ARTWORKS</NavLink>
             <NavLink to="/ads" className={({isActive}) => `tab ${isActive ? 'tab-active' : ''}`}>ADVERTENTIEBEHEER</NavLink>
+                      <NavLink to="/streams" className={({isActive}) => `tab ${isActive ? 'tab-active' : ''}`}>STREAMS</NavLink>
           </nav>
         </div>
         <div className="flex items-center gap-3">

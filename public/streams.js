@@ -65,26 +65,34 @@ function movingAvg7(arr){ const out=[]; const q=[]; let sum=0; for(let i=0;i<arr
 function weeklyAverageSeries(arr){ const groups=new Map(); arr.forEach(pt=>{ const d=toISO(pt.date); const [y,w]=isoWeek(d); const k=`${y}-${w}`; if(!groups.has(k)) groups.set(k, []); groups.get(k).push(pt.value); }); const weekMean=new Map(); groups.forEach((vals,k)=>{ const m=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length); weekMean.set(k,m); }); return arr.map(pt=>{ const d=toISO(pt.date); const [y,w]=isoWeek(d); return weekMean.get(`${y}-${w}`); }); }
 let chart;
 function renderChart(){
-  const data=mergeData(); const labels=data.map(d=>d.date); const daily=data.map(d=>d.value); const ma7=movingAvg7(data); const wk=weeklyAverageSeries(data);
+  const data=mergeData(); const labels=data.map(d=>d.date); const daily=data.map(d=>d.value); const ma7=movingAvg7(data); const wk=null;
   const ctx=document.getElementById('streamsChart').getContext('2d'); if(chart) chart.destroy();
-  chart=new Chart(ctx, {
+  
+      const vals = daily.filter(v=>typeof v==='number');
+      const minV = Math.min(...vals);
+      const maxV = Math.max(...vals);
+      const pad = Math.round((maxV - minV) * 0.1);
+      const yMin = Math.max(0, minV - pad);
+      const yMax = maxV + pad;
+
+      chart=new Chart(ctx, {
     type:'line',
     data:{ labels, datasets:[
-      { label:'Dagtotalen', data: daily, tension:0.2, borderWidth:2, pointRadius:0 },
-      { label:'7-daags gemiddelde', data: ma7, tension:0.2, borderWidth:2, pointRadius:0 },
-      { label:'Weekgemiddelde (ISO-week)', data: wk, stepped: true, borderWidth:2, pointRadius:0 }
+      { label:'Dagtotalen', data: daily, tension:0.2, borderWidth:3, pointRadius:0 },
+      { label:'7-daags gemiddelde', data: ma7, tension:0.2, borderWidth:3, pointRadius:0 },
+      { label:'Weekgemiddelde (ISO-week)', data: wk, stepped: true, borderWidth:3, pointRadius:0 }
     ]},
     options:{ responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false },
       plugins:{ legend:{ labels:{ color:'#e6ecf5' } }, tooltip:{ callbacks:{ label:(ctx)=> `${ctx.dataset.label}: ${ctx.formattedValue}` } } },
-      scales:{ x:{ ticks:{ color:'#93a3b8' }, grid:{ color:'rgba(255,255,255,0.05)' } }, y:{ ticks:{ color:'#93a3b8' }, grid:{ color:'rgba(255,255,255,0.07)' } } }
+      scales:{ x:{ ticks:{ color:'#93a3b8' }, grid:{ color:'rgba(255,255,255,0.05)' } }, y:{ min:yMin, max:yMax, ticks:{ color:'#93a3b8' }, grid:{ color:'rgba(255,255,255,0.07)' } } }
     }
   });
 }
 function updateChartFromStorage(){ renderChart(); }
 function downloadCSV(){
-  const data=mergeData(); const ma7=movingAvg7(data); const wk=weeklyAverageSeries(data);
-  let rows=[['Datum','Totaal','MA7','Weekgem']];
-  for (let i=0;i<data.length;i++) rows.push([data[i].date, data[i].value, ma7[i] ?? '', wk[i] ?? '']);
+  const data=mergeData(); const ma7=movingAvg7(data); const wk=null;
+  let rows=[['Datum','Totaal','MA7']];
+  for (let i=0;i<data.length;i++) rows.push([data[i].date, data[i].value, ma7[i] ?? '']);
   const csv = rows.map(r=>r.join(',')).join('\n');
   const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob);
   const a=document.createElement('a'); a.href=url; a.download='night-notes-dagtotaal.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
@@ -99,4 +107,6 @@ function init(){
   $('#daysBack').addEventListener('change', renderList);
   $('#toDate').addEventListener('change', renderList);
 }
+// Correct known data errors (Week 4 zondag -> 74.840)
+PRELOAD_DATA = PRELOAD_DATA.map(p => (p.date === '2025-02-02' ? { ...p, value: 74840 } : p));
 window.addEventListener('load', init);

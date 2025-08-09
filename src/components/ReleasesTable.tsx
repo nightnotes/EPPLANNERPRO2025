@@ -1,5 +1,5 @@
 
-import { useMemo, useRef, useState, useEffect } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ReleaseRow } from '../utils/schedule'
 
 type Props = { rows: ReleaseRow[] }
@@ -34,12 +34,19 @@ export default function ReleasesTable({ rows }: Props) {
 
 
   function setDone(id: string, done: boolean) {
+  // immediate UI update
   setStates(prev => ({ ...prev, [id]: done }))
+  // persist + cloud
   const s = { ...loadStates(), [id]: done }
   saveStates(s)
   saveReleasesStatus(s)
 }
-), done: val }
+))
+  const s = { ...loadStates(), [id]: done }
+  saveStates(s)
+  saveReleasesStatus(s)
+}
+}
     saveStates(s)
     saveReleasesStatus(s)
     // force a repaint by updating a benign key (cheap trick)
@@ -101,7 +108,7 @@ export default function ReleasesTable({ rows }: Props) {
                     <span
                       className={"inline-block w-3 h-3 rounded-full cursor-pointer select-none " + (green ? "bg-green-500" : "bg-red-500")}
                       title={green ? "Ingedrukt houden om ongedaan te maken" : "Nog niet klaar"}
-                      onClick={()=>setDone(id, !green)} onClick={()=>setDone(id, !green)} {...useLongPress(id)}
+                      onClick={()=>setDone(id, !green)} onClick={()=>setDone(id, !green)} onClick={()=>setDone(id, !green)} {...useLongPress(id)}
                     />
                   </td>
                 </tr>

@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState, useEffect } from 'react'
 import { ReleaseRow } from '../utils/schedule'
 
 type Props = { rows: ReleaseRow[] }
@@ -34,9 +34,7 @@ export default function ReleasesTable({ rows }: Props) {
 
 
   function setDone(id: string, done: boolean) {
-  // immediate UI update
   setStates(prev => ({ ...prev, [id]: done }))
-  // persist + cloud
   const s = { ...loadStates(), [id]: done }
   saveStates(s)
   saveReleasesStatus(s)
@@ -46,7 +44,7 @@ export default function ReleasesTable({ rows }: Props) {
   saveStates(s)
   saveReleasesStatus(s)
 }
-}
+), done: val }
     saveStates(s)
     saveReleasesStatus(s)
     // force a repaint by updating a benign key (cheap trick)

@@ -1,18 +1,14 @@
-
 import { useEffect, useMemo, useState } from "react";
-
-import { getShared, setShared, startPolling } from '../utils/sharedClient';
 import Navbar from "../components/Navbar";
-import { generateSchedule, ReleaseRow } from "../utils/schedule";
 import { getUser } from "../utils/auth";
+import { generateSchedule, ReleaseRow } from "../utils/schedule";
+import { getShared, setShared, startPolling } from "../utils/sharedClient";
 
 type TaskState = { splits?: boolean; buma?: boolean; done?: boolean };
 type StateMap = Record<string, TaskState>;
 
-
 const KEY = "releaseStates";
 const LAST_KEY = "lastTask";
-
 
 function loadStates(): StateMap {
   try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch { return {}; }
@@ -22,20 +18,16 @@ function idFor(r: ReleaseRow) { return `${r.date}_${r.artist}`; }
 
 export default function EPChecklist() {
   const user = getUser() || "Nuno";
+
   const [states, setStates] = useState<StateMap>(() => loadStates());
-  const [last, setLast] = useState<ReleaseRow | null>(() => {
-    try { const v = localStorage.getItem(LAST_KEY); 
   const [sharedOk, setSharedOk] = useState<boolean | null>(null);
-return v ? JSON.parse(v) as ReleaseRow : null; } catch { return null; }
+  const [last, setLast] = useState<ReleaseRow | null>(() => {
+    try { const v = localStorage.getItem(LAST_KEY); return v ? JSON.parse(v) as ReleaseRow : null; } catch { return null; }
   });
 
-  // base rows for whole period
+  // Build rows for next 45 days for current user
   const rows = useMemo(() => generateSchedule(new Date("2025-08-25"), new Date("2026-12-31")), []);
-
-  // filter to current user and next 45 days window
-  const windowEnd = useMemo(() => {
-    const d = new Date(); d.setDate(d.getDate() + 45); return d;
-  }, []);
+  const windowEnd = useMemo(() => { const d = new Date(); d.setDate(d.getDate() + 45); return d; }, []);
   const myRows = useMemo(() => {
     const inWindow = rows.filter(r => {
       const [dd,mm,yy] = r.date.split("-").map(Number);
@@ -45,16 +37,6 @@ return v ? JSON.parse(v) as ReleaseRow : null; } catch { return null; }
     return inWindow.filter(r => r.who === user);
   }, [rows, user, windowEnd]);
 
-  const next = useMemo(() => {
-    return myRows.find(r => !states[idFor(r)]?.done) || null;
-  }, [myRows, states]);
-
-  const total = myRows.length;
-  const doneCount = myRows.filter(r => states[idFor(r)]?.done).length;
-  const pct = total ? Math.round((doneCount/total)*100) : 0;
-
-  
-  // Sync local state with shared 'releases_state' from Netlify Blobs
   useEffect(() => {
     let stop: any = null;
     (async () => {
@@ -79,7 +61,6 @@ return v ? JSON.parse(v) as ReleaseRow : null; } catch { return null; }
     return () => { if (stop) stop(); };
   }, []);
 
-
   async function persist(r: ReleaseRow, s: TaskState) {
     const map = { ...states, [idFor(r)]: s };
     setStates(map);
@@ -92,27 +73,28 @@ return v ? JSON.parse(v) as ReleaseRow : null; } catch { return null; }
     const newVal = !cur[key];
     let nextState: TaskState = { ...cur, [key]: newVal };
 
-    // Klaar kan alleen aan als splits + buma beide aan staan
+    // done kan alleen aan als splits + buma beide aan staan
     if (key === "done" && newVal === true && !(nextState.splits && nextState.buma)) {
       return;
     }
-    // Als splits/buma uitgaat, forceer done=false
+    // splits/buma uit → done=false
     if ((key === "splits" || key === "buma") && !newVal) {
       nextState.done = false;
     }
 
-    // Als 'done' net op true gaat -> opslaan als 'last'
     if (key === "done" && newVal === true) {
       localStorage.setItem(LAST_KEY, JSON.stringify(r));
       setLast(r);
-    }    await persist(r, nextState);
-}
+    }
+
+    await persist(r, nextState);
+  }
 
   function restoreLast() {
     if (!last) return;
     const id = idFor(last);
     const cur = states[id] || {};
-    const newState = { ...cur, done: false };
+    const newState: TaskState = { ...cur, splits: true, buma: true, done: true };
     persist(last, newState);
     setLast(null);
     localStorage.removeItem(LAST_KEY);
@@ -122,7 +104,6 @@ return v ? JSON.parse(v) as ReleaseRow : null; } catch { return null; }
     <div>
       <Navbar />
       <div className="section pt-6">
-        
         <div className="mb-4">
           {sharedOk === null ? (
             <span className="px-2 py-1 text-xs rounded-full bg-nn_bg2 border border-nn_border">Sync-status controleren…</span>
@@ -133,61 +114,48 @@ return v ? JSON.parse(v) as ReleaseRow : null; } catch { return null; }
           )}
         </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-          {/* Sidebar quick links */}
-          <aside className="md:col-span-3">
-            <div className="card p-4 sticky top-20">
-              <div className="text-sm text-nn_muted mb-2">Snel naar</div>
-              <div className="flex flex-col gap-2">
-                <a className="tab tab-active text-center" href="https://distrokid.com/new/" target="_blank" rel="noreferrer">DistroKid</a>
-                <a className="tab tab-active text-center" href="https://artist.amuse.io/studio" target="_blank" rel="noreferrer">Amuse</a>
-                <a className="tab tab-active text-center" href="https://mijn.bumastemra.nl/" target="_blank" rel="noreferrer">Buma/Stemra</a>
-              </div>
-            </div>
-          </aside>
-
-          {/* Main content */}
-          <main className="md:col-span-9 space-y-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-semibold">EP Checklist</h1>
-              <div className="flex items-center gap-3 text-sm">
-                <span className="text-nn_muted">{doneCount}/{total}</span>
-                <progress max={100} value={pct} aria-label="voortgang"></progress>
-              </div>
-            </div>
-
-            <div className="card p-5 fade-in">
-              <div className="text-sm text-nn_muted mb-3">Volgende taak voor <b>{user}</b></div>
-              {!next ? (
-                <div className="text-nn_muted">Geen openstaande taken 🎉</div>
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-3 items-center">
-                  <div className="lg:col-span-4 font-medium">{next.date} — <b>{next.artist}</b></div>
-                  <div className="lg:col-span-2">{next.who}</div>
-                  <div className="lg:col-span-2">{next.distribution}</div>
-                  <div className="lg:col-span-4">
-                    <div className="next-task-actions flex items-center justify-end gap-2 sm:gap-3">
-                      <button className={"round-toggle " + ((states[idFor(next)]?.splits) ? "on" : "")} onClick={()=>toggle(next, 'splits')} aria-pressed={!!states[idFor(next)]?.splits}>Splits</button>
-                      <button className={"round-toggle " + ((states[idFor(next)]?.buma) ? "on" : "")} onClick={()=>toggle(next, 'buma')} aria-pressed={!!states[idFor(next)]?.buma}>Buma/Stemra</button>
-                      <button className={"round-toggle " + ((states[idFor(next)]?.done) ? "on" : "")} disabled={!(states[idFor(next)]?.splits && states[idFor(next)]?.buma)} onClick={()=>toggle(next, 'done')} aria-pressed={!!states[idFor(next)]?.done}>Klaar</button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="card p-5 fade-in">
-              <div className="font-semibold mb-2">Laatst afgerond</div>
-              {!last ? (
-                <div className="text-nn_muted">Nog niks afgerond.</div>
-              ) : (
-                <div className="flex items-center justify-between">
-                  <span>{last.date} — <b>{last.artist}</b> ({last.distribution})</span>
-                  <button className="px-3 py-1 rounded-full bg-nn_accent text-white hover:opacity-90 text-sm" onClick={restoreLast}>Herstel</button>
-                </div>
-              )}
-            </div>
-          </main>
+        <div className="card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-xl font-semibold">EP Checklist — {user}</h1>
+            {last ? (
+              <button className="px-3 py-1 rounded-full bg-nn_accent hover:opacity-90 text-sm" onClick={restoreLast}>Herstel laatste 'done'</button>
+            ) : null}
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-nn_muted">
+                <tr>
+                  <th className="text-left py-2">Datum</th>
+                  <th className="text-left py-2">Artiest</th>
+                  <th className="text-left py-2">Dist.</th>
+                  <th className="text-left py-2">Splits</th>
+                  <th className="text-left py-2">Buma</th>
+                  <th className="text-left py-2">Klaar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {myRows.map((r) => {
+                  const st = states[idFor(r)] || {};
+                  return (
+                    <tr key={idFor(r)} className="border-t border-nn_border/40">
+                      <td className="py-2">{r.date}</td>
+                      <td className="py-2">{r.artist}</td>
+                      <td className="py-2">{r.distribution}</td>
+                      <td className="py-2">
+                        <input type="checkbox" checked={!!st.splits} onChange={() => toggle(r, "splits")} />
+                      </td>
+                      <td className="py-2">
+                        <input type="checkbox" checked={!!st.buma} onChange={() => toggle(r, "buma")} />
+                      </td>
+                      <td className="py-2">
+                        <input type="checkbox" checked={!!st.done} onChange={() => toggle(r, "done")} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

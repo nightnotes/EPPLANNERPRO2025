@@ -63,14 +63,17 @@ export default function EPChecklist() {
         const initial = await getShared('releases_state');
         if (initial && typeof initial === 'object') {
           setStates(initial as StateMap);
+          setSharedOk(true);
+        } else {
+          setSharedOk(false);
         }
-      } catch {}
+      } catch {
+        setSharedOk(false);
+      }
       stop = startPolling('releases_state', (data: any) => {
         if (data && typeof data === 'object') {
           setStates(data as StateMap);
           setSharedOk(true);
-        }
-      });
         }
       });
     })();
@@ -78,12 +81,14 @@ export default function EPChecklist() {
   }, []);
 
 
-  async function persist(r: ReleaseRow, s: TaskState){
+  async function persist(r: ReleaseRow, s: TaskState) {
     const map = { ...states, [idFor(r)]: s };
+    setStates(map); saveStates(map);
+    try { await setShared('releases_state', map); } catch {}
+  }
     setStates(map); saveStates(map);
     try { await setShared('releases_state', map); } catch (e) { /* noop */ }
   };
-    setStates(map); saveStates(map);
   }
 
   async function toggle(r: ReleaseRow, key: keyof TaskState) {
@@ -105,8 +110,8 @@ export default function EPChecklist() {
       localStorage.setItem(LAST_KEY, JSON.stringify(r));
       setLast(r);
     }
-    await persist(r, nextState);
-  }
+    await    await persist(r, nextState);
+}
 
   function restoreLast() {
     if (!last) return;

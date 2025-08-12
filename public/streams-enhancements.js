@@ -89,3 +89,24 @@
     }
   }
 })();
+
+
+  // Shared badge status
+  async function updateSharedBadge(){
+    const el = document.getElementById('sharedBadge');
+    if (!el) return;
+    try {
+      const r = await fetch('/.netlify/functions/getData?key=streams_timeseries', { cache:'no-store' });
+      if (r.ok) {
+        el.textContent = 'Gedeelde modus actief';
+        el.classList.add('ok'); el.classList.remove('err');
+      } else {
+        el.textContent = 'Offline modus (alleen lokaal)';
+        el.classList.add('err'); el.classList.remove('ok');
+      }
+    } catch(e){
+      el.textContent = 'Offline modus (alleen lokaal)';
+      el.classList.add('err'); el.classList.remove('ok');
+    }
+  }
+  updateSharedBadge();

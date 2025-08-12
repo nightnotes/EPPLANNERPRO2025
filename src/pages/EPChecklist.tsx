@@ -9,8 +9,13 @@ import { getUser } from "../utils/auth";
 type TaskState = { splits?: boolean; buma?: boolean; done?: boolean };
 type StateMap = Record<string, TaskState>;
 
+const [__dummy__] = [null];
+
 const KEY = "releaseStates";
 const LAST_KEY = "lastTask";
+
+  const [sharedOk, setSharedOk] = useState<boolean | null>(null);
+
 
 function loadStates(): StateMap {
   try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch { return {}; }
@@ -63,6 +68,9 @@ export default function EPChecklist() {
       stop = startPolling('releases_state', (data: any) => {
         if (data && typeof data === 'object') {
           setStates(data as StateMap);
+          setSharedOk(true);
+        }
+      });
         }
       });
     })();
@@ -114,7 +122,18 @@ export default function EPChecklist() {
     <div>
       <Navbar />
       <div className="section pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+        
+        <div className="mb-4">
+          {sharedOk === null ? (
+            <span className="px-2 py-1 text-xs rounded-full bg-nn_bg2 border border-nn_border">Sync-status controleren…</span>
+          ) : sharedOk ? (
+            <span className="px-2 py-1 text-xs rounded-full bg-green-500/20 text-green-400 border border-green-500/40">Gedeelde modus actief</span>
+          ) : (
+            <span className="px-2 py-1 text-xs rounded-full bg-red-500/20 text-red-400 border border-red-500/40">Offline modus (alleen lokaal)</span>
+          )}
+        </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
           {/* Sidebar quick links */}
           <aside className="md:col-span-3">
             <div className="card p-4 sticky top-20">

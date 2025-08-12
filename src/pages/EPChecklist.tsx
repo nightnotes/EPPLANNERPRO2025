@@ -1,5 +1,7 @@
 
 import { useEffect, useMemo, useState } from "react";
+
+import { getShared, setShared, startPolling } from '../utils/sharedClient';
 import Navbar from "../components/Navbar";
 import { generateSchedule, ReleaseRow } from "../utils/schedule";
 import { getUser } from "../utils/auth";
@@ -47,18 +49,36 @@ export default function EPChecklist() {
   const doneCount = myRows.filter(r => states[idFor(r)]?.done).length;
   const pct = total ? Math.round((doneCount/total)*100) : 0;
 
+  
+  // Sync local state with shared 'releases_state' from Netlify Blobs
   useEffect(() => {
-    function onStorage() { setStates(loadStates()); }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    let stop: any = null;
+    (async () => {
+      try {
+        const initial = await getShared('releases_state');
+        if (initial && typeof initial === 'object') {
+          setStates(initial as StateMap);
+        }
+      } catch {}
+      stop = startPolling('releases_state', (data: any) => {
+        if (data && typeof data === 'object') {
+          setStates(data as StateMap);
+        }
+      });
+    })();
+    return () => { if (stop) stop(); };
   }, []);
 
-  function persist(r: ReleaseRow, s: TaskState) {
+
+  async function persist(r: ReleaseRow, s: TaskState){
     const map = { ...states, [idFor(r)]: s };
+    setStates(map); saveStates(map);
+    try { await setShared('releases_state', map); } catch (e) { /* noop */ }
+  };
     setStates(map); saveStates(map);
   }
 
-  function toggle(r: ReleaseRow, key: keyof TaskState) {
+  async function toggle(r: ReleaseRow, key: keyof TaskState) {
     const cur = states[idFor(r)] || {};
     const newVal = !cur[key];
     let nextState: TaskState = { ...cur, [key]: newVal };
@@ -77,8 +97,7 @@ export default function EPChecklist() {
       localStorage.setItem(LAST_KEY, JSON.stringify(r));
       setLast(r);
     }
-
-    persist(r, nextState);
+    await persist(r, nextState);
   }
 
   function restoreLast() {

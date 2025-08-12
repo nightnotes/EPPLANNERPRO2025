@@ -23,3 +23,8 @@ export default function Streams() {
     </div>
   )
 }
+
+      <button onClick={() => {
+        const today = new Date().toISOString().split('T')[0];
+        appendStreamsPoint(today, streamsValue).then(()=>alert('Opgeslagen'));
+      }}>Dag opslaan</button>

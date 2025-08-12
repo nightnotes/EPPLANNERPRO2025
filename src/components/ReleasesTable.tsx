@@ -22,7 +22,9 @@ export default function ReleasesTable({ rows }: Props) {
   const [month, setMonth] = useState<string>('all')
 
   // Load local
-  useEffect(()=>{ setStates(loadStates()) }, [rows.length])
+  useEffect(()=>{ setStates(loadStates()) 
+    return () => stop();
+  }, [rows.length])
 
   // Load cloud on mount
   useEffect(()=>{

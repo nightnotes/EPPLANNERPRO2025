@@ -9,12 +9,9 @@ import { getUser } from "../utils/auth";
 type TaskState = { splits?: boolean; buma?: boolean; done?: boolean };
 type StateMap = Record<string, TaskState>;
 
-const [__dummy__] = [null];
 
 const KEY = "releaseStates";
 const LAST_KEY = "lastTask";
-
-  const [sharedOk, setSharedOk] = useState<boolean | null>(null);
 
 
 function loadStates(): StateMap {
@@ -27,7 +24,9 @@ export default function EPChecklist() {
   const user = getUser() || "Nuno";
   const [states, setStates] = useState<StateMap>(() => loadStates());
   const [last, setLast] = useState<ReleaseRow | null>(() => {
-    try { const v = localStorage.getItem(LAST_KEY); return v ? JSON.parse(v) as ReleaseRow : null; } catch { return null; }
+    try { const v = localStorage.getItem(LAST_KEY); 
+  const [sharedOk, setSharedOk] = useState<boolean | null>(null);
+return v ? JSON.parse(v) as ReleaseRow : null; } catch { return null; }
   });
 
   // base rows for whole period

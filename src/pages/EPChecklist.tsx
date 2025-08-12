@@ -83,12 +83,9 @@ export default function EPChecklist() {
 
   async function persist(r: ReleaseRow, s: TaskState) {
     const map = { ...states, [idFor(r)]: s };
-    setStates(map); saveStates(map);
+    setStates(map);
+    saveStates(map);
     try { await setShared('releases_state', map); } catch {}
-  }
-    setStates(map); saveStates(map);
-    try { await setShared('releases_state', map); } catch (e) { /* noop */ }
-  };
   }
 
   async function toggle(r: ReleaseRow, key: keyof TaskState) {
@@ -109,8 +106,7 @@ export default function EPChecklist() {
     if (key === "done" && newVal === true) {
       localStorage.setItem(LAST_KEY, JSON.stringify(r));
       setLast(r);
-    }
-    await    await persist(r, nextState);
+    }    await persist(r, nextState);
 }
 
   function restoreLast() {

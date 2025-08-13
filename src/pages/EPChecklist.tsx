@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import { getUser } from "../utils/auth";
 import { generateSchedule, ReleaseRow } from "../utils/schedule";
-import { getShared, setShared, startPolling } from "../utils/sharedClient";
 
 type TaskState = { splits?: boolean; buma?: boolean; done?: boolean };
 type StateMap = Record<string, TaskState>;
@@ -47,31 +46,24 @@ export default function EPChecklist() {
   const map = { ...states, [idFor(r)]: s };
   setStates(map);
   saveStates(map);
-};
-    setStates(map);
-    saveStates(map);
-    
-  }
+}
 
-  async function toggle(r: ReleaseRow, key: keyof TaskState) {
-    const cur = states[idFor(r)] || {};
+function toggle(r: ReleaseRow, key: keyof TaskState) {
+    const id = idFor(r);
+    const cur = states[id] || {};
     const newVal = !cur[key];
     let nextState: TaskState = { ...cur, [key]: newVal };
 
-    // done kan alleen aan als splits + buma beide aan staan
     if (key === "done" && newVal === true && !(nextState.splits && nextState.buma)) {
       return;
     }
-    // splits/buma uit → done=false
     if ((key === "splits" || key === "buma") && !newVal) {
       nextState.done = false;
     }
-
     if (key === "done" && newVal === true) {
       localStorage.setItem(LAST_KEY, JSON.stringify(r));
       setLast(r);
     }
-
     persist(r, nextState);
   }
 

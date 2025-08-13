@@ -24,7 +24,9 @@ export default function ReleasesTable({ rows }: Props) {
   // Load local
   useEffect(()=>{ setStates(loadStates()) 
     return () => stop();
-  }, [rows.length])
+  
+  return () => stop();
+}, [rows.length])
 
   // Load cloud on mount
   useEffect(()=>{

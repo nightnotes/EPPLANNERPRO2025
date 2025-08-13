@@ -1,4 +1,3 @@
-
 import { getStore } from '@netlify/blobs';
 export default async (req, context) => {
   try {
@@ -8,7 +7,5 @@ export default async (req, context) => {
     const store = getStore({ name: 'epplanner' });
     const val = await store.get(key, { type: 'json' });
     return new Response(JSON.stringify(val || {}), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
-  }
+  } catch (e) { return new Response(JSON.stringify({ error: e.message }), { status: 500 }); }
 };

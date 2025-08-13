@@ -38,31 +38,16 @@ export default function EPChecklist() {
   }, [rows, user, windowEnd]);
 
   useEffect(() => {
-    let stop: any = null;
-    (async () => {
-      try {
-        const initial = await getShared('releases_state');
-        if (initial && typeof initial === 'object') {
-          setStates(initial as StateMap);
-          setSharedOk(true);
-        } else {
-          setSharedOk(false);
-        }
-      } catch {
-        setSharedOk(false);
-      }
-      stop = startPolling('releases_state', (data: any) => {
-        if (data && typeof data === 'object') {
-          setStates(data as StateMap);
-          setSharedOk(true);
-        }
-      });
-    })();
-    return () => { if (stop) stop(); };
-  }, []);
+  function onStorage(){ setStates(loadStates()); }
+  window.addEventListener('storage', onStorage);
+  return () => window.removeEventListener('storage', onStorage);
+}, []);
 
-  async function persist(r: ReleaseRow, s: TaskState) {
-    const map = { ...states, [idFor(r)]: s };
+  function persist(r: ReleaseRow, s: TaskState) {
+  const map = { ...states, [idFor(r)]: s };
+  setStates(map);
+  saveStates(map);
+};
     setStates(map);
     saveStates(map);
     try { await setShared('releases_state', map); } catch {}
@@ -87,7 +72,7 @@ export default function EPChecklist() {
       setLast(r);
     }
 
-    await persist(r, nextState);
+    persist(r, nextState);
   }
 
   function restoreLast() {
@@ -104,16 +89,6 @@ export default function EPChecklist() {
     <div>
       <Navbar />
       <div className="section pt-6">
-        <div className="mb-4">
-          {sharedOk === null ? (
-            <span className="px-2 py-1 text-xs rounded-full bg-nn_bg2 border border-nn_border">Sync-status controleren…</span>
-          ) : sharedOk ? (
-            <span className="px-2 py-1 text-xs rounded-full bg-green-500/20 text-green-400 border border-green-500/40">Gedeelde modus actief</span>
-          ) : (
-            <span className="px-2 py-1 text-xs rounded-full bg-red-500/20 text-red-400 border border-red-500/40">Offline modus (alleen lokaal)</span>
-          )}
-        </div>
-
         <div className="card p-4">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-semibold">EP Checklist — {user}</h1>

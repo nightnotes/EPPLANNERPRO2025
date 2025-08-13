@@ -1,4 +1,3 @@
-
 import { getStore } from '@netlify/blobs';
 export default async (req, context) => {
   try {
@@ -10,12 +9,9 @@ export default async (req, context) => {
     const key = 'streams_timeseries';
     const series = (await store.get(key, { type: 'json' })) || [];
     const idx = series.findIndex(p => p.date === date);
-    if (idx >= 0) series[idx].streams = streams;
-    else series.push({ date, streams });
+    if (idx >= 0) series[idx].streams = streams; else series.push({ date, streams });
     series.sort((a, b) => a.date.localeCompare(b.date));
     await store.setJSON(key, series);
     return new Response(JSON.stringify({ ok: true, series }), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
-  }
+  } catch (e) { return new Response(JSON.stringify({ error: e.message }), { status: 500 }); }
 };

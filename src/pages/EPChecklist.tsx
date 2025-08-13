@@ -50,7 +50,7 @@ export default function EPChecklist() {
 };
     setStates(map);
     saveStates(map);
-    try { await setShared('releases_state', map); } catch {}
+    
   }
 
   async function toggle(r: ReleaseRow, key: keyof TaskState) {

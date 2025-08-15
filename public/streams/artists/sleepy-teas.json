@@ -1,0 +1,16 @@
+{
+  "name": "Sleepy Teas",
+  "spotifyArtistUrl": "https://artists.spotify.com/c/artist/3Ax9FlTyHNJdOhAKaxhZl9/home",
+  "startDate": "2025-08-25",
+  "schedule": {
+    "frequency": "biweekly",
+    "weekdays": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri"
+    ]
+  },
+  "timeseries": []
+}

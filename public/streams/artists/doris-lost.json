@@ -1,0 +1,16 @@
+{
+  "name": "Doris Lost",
+  "spotifyArtistUrl": "https://artists.spotify.com/c/artist/43U1R9AZoGI3V5iaW6lht8/home",
+  "startDate": "2025-08-25",
+  "schedule": {
+    "frequency": "biweekly",
+    "weekdays": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri"
+    ]
+  },
+  "timeseries": []
+}

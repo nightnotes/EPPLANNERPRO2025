@@ -1,0 +1,16 @@
+{
+  "name": "Poluz",
+  "spotifyArtistUrl": "https://artists.spotify.com/c/artist/0vaXEuhH3eaJuTdMoLFdbN/home",
+  "startDate": "2025-08-25",
+  "schedule": {
+    "frequency": "biweekly",
+    "weekdays": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri"
+    ]
+  },
+  "timeseries": []
+}

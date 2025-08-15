@@ -1,0 +1,16 @@
+{
+  "name": "Slaapmutsje",
+  "spotifyArtistUrl": "https://artists.spotify.com/c/artist/1iH0DmClTXD3DEXO490gbq/home",
+  "startDate": "2025-08-25",
+  "schedule": {
+    "frequency": "biweekly",
+    "weekdays": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri"
+    ]
+  },
+  "timeseries": []
+}

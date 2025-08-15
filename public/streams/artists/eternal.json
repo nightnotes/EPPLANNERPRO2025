@@ -1,0 +1,16 @@
+{
+  "name": "Eternal",
+  "spotifyArtistUrl": "https://artists.spotify.com/c/artist/4oOqA7kbwce90hbDDKjoID/home",
+  "startDate": "2025-08-25",
+  "schedule": {
+    "frequency": "biweekly",
+    "weekdays": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri"
+    ]
+  },
+  "timeseries": []
+}

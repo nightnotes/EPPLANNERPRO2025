@@ -1,0 +1,7 @@
+*** public/streams.html	original
+--- public/streams.html	updated
+***************
+*** 1,200 ****
+--- 1,201 ----
+  (after your existing streams.js include)
++ <script defer src="/streams-append.js"></script>

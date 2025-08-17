@@ -1,8 +1,3 @@
-
-[[edge_functions]]
-path = "/streams"
-function = "streams-inject"
-
-[[edge_functions]]
-path = "/streams.html"
-function = "streams-inject"
+[build]
+publish="."
+command=""

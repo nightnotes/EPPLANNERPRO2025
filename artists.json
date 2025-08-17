@@ -1,130 +1,34 @@
 [
-  {
-    "id": "7sWJR3GtdK9Jr09w5Nh16B",
-    "name": "Katty"
-  },
-  {
-    "id": "1KJc2XcGCkzZypmNDhIMeR",
-    "name": "Muted Mind"
-  },
-  {
-    "id": "6kWh8CBUb92RPXrCMzJ2og",
-    "name": "Swooshy"
-  },
-  {
-    "id": "5d8GtQxBbULssUMeaHpTJ4",
-    "name": "Eleanor Moon"
-  },
-  {
-    "id": "5AzDNSnXecyb5n2SGEk210",
-    "name": "Sleepy Delrow"
-  },
-  {
-    "id": "6CNN1uNMESxlBFkAlPLFGC",
-    "name": "Lila Serene"
-  },
-  {
-    "id": "1lw523m68IbWJqOXAW1dp6",
-    "name": "Soft Dawn"
-  },
-  {
-    "id": "6nCQ2Jjeut72ninwDgB6Yy",
-    "name": "Loomy"
-  },
-  {
-    "id": "4ByXb0waTbnoUu4EaPPD2W",
-    "name": "Evelyn Winter"
-  },
-  {
-    "id": "00yTD0tYQNrivASVQgBGes",
-    "name": "Krople"
-  },
-  {
-    "id": "357zDmhgGTYSyYTyBTD65t",
-    "name": "Nunery Dream"
-  },
-  {
-    "id": "2Ar9N9Kr5qNvDq188I0DsC",
-    "name": "Luna Nights"
-  },
-  {
-    "id": "2McwFGt12uHTCNmI7VhC2K",
-    "name": "Celestine Viora"
-  },
-  {
-    "id": "6IsY6SBSPEQFRDZYzsF2nS",
-    "name": "Domindo Nuni"
-  },
-  {
-    "id": "79A1B10WsQEm7MiRCHC9Fa",
-    "name": "Sophia Vale"
-  },
-  {
-    "id": "37rDPPf5ljzqE4MTvC1PyH",
-    "name": "Ava Willow"
-  },
-  {
-    "id": "3lQpO3wZJRN29Ijr8fpwaN",
-    "name": "Motionless"
-  },
-  {
-    "id": "00qvWOgeQtQf4XcxJM6DzU",
-    "name": "Ludo Legato"
-  },
-  {
-    "id": "4d3WwgfETgTvddopuSfQ8i",
-    "name": "Deep Sleep"
-  },
-  {
-    "id": "2tKuJrJLd6BARL1GVE3VVT",
-    "name": "Vallie Ginns"
-  },
-  {
-    "id": "61Qha9Ylp3V6dDX8Jj5Z1z",
-    "name": "Rekkel Paals"
-  },
-  {
-    "id": "7dcX4psw7M8J5l1c5jRmX3",
-    "name": "Luana Sol"
-  },
-  {
-    "id": "4cGEMRW0A7PAZcovV3S8KT",
-    "name": "Wishes"
-  },
-  {
-    "id": "5P1RyLkpa2GMDium23Ptn6",
-    "name": "Rain Notes"
-  },
-  {
-    "id": "0OXYrzdbgxer5KtxSTuUDy",
-    "name": "Cosmic Calm"
-  },
-  {
-    "id": "3JxvfjZaLHM60yYRt7BYZm",
-    "name": "Dreamflow"
-  },
-  {
-    "id": "0vaXEuhH3eaJuTdMoLFdbN",
-    "name": "Poluz"
-  },
-  {
-    "id": "43U1R9AZoGI3V5iaW6lht8",
-    "name": "Doris Lost"
-  },
-  {
-    "id": "4oOqA7kbwce90hbDDKjoID",
-    "name": "Eternal"
-  },
-  {
-    "id": "1iH0DmClTXD3DEXO490gbq",
-    "name": "Slaapmutsje"
-  },
-  {
-    "id": "20ajFDuyJzM8xGkWL9agiV",
-    "name": "ZizZa"
-  },
-  {
-    "id": "3Ax9FlTyHNJdOhAKaxhZl9",
-    "name": "Sleepy Teas"
-  }
+  "Katty",
+  "Muted Mind",
+  "Swooshy",
+  "Eleanor Moon",
+  "Sleepy Delrow",
+  "Lila Serene",
+  "Soft Dawn",
+  "Loomy",
+  "Evelyn Winter",
+  "Krople",
+  "Nunery Dream",
+  "Luna Nights",
+  "Celestine Viora",
+  "Domindo Nuni",
+  "Sophia Vale",
+  "Ava Willow",
+  "Motionless",
+  "Ludo Legato",
+  "Dreamflow",
+  "Poluz",
+  "Doris Lost",
+  "Eternal",
+  "Sleepy Teas",
+  "ZizZa",
+  "Slaapmutsje",
+  "Deep Sleep",
+  "Vallie Ginns",
+  "Rekkel Paals",
+  "Luana Sol",
+  "Wishes",
+  "Rain Notes",
+  "Cosmic Calm"
 ]

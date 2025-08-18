@@ -1,4 +1,3 @@
-/* uses shared state via ReleasesTable */
 export type TaskKey = string; // `${date}__${artist}`
 export type TaskState = { splits?: boolean; buma?: boolean; done?: boolean };
 

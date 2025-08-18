@@ -1,3 +1,4 @@
+/* sync script */
 /*! EP Planner — Releases realtime-ish sync (CSP-safe, no external libs) */
 (function(){
   const PROJECT_ID = "night-notes-c92e3";

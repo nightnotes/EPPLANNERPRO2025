@@ -22,45 +22,9 @@ export default function ReleasesTable({ rows }: Props) {
   const [month, setMonth] = useState<string>('all')
 
   // Load local
-  useEffect(()=>{
-    setStates(loadStates());
-  }, [rows.length])
-
-  // Poll shared cloud state to keep all users in sync
-  useEffect(()=>{
-    let stop = false;
-    async function tick(){
-      if (stop) return;
-      try {
-        const r = await fetch('/.netlify/functions/kv-store?key=releases-status', { cache: 'no-store' });
-        const j = await r.json();
-        if (j && typeof j.value === 'object' && j.value) {
-          const cloud = j.value;
-          // Only update if changed to avoid loops
-          try {
-            const local = loadStates();
-            if (JSON.stringify(local) !== JSON.stringify(cloud)) {
-              saveStates(cloud);
-              setStates(cloud);
-            }
-          } catch {
-            saveStates(cloud);
-            setStates(cloud);
-          }
-          setCloudOK(true);
-        }
-      } catch (e) {
-        setCloudOK(false);
-      } finally {
-        if (!stop) setTimeout(tick, 5000); // 5s polling
-      }
-    }
-    tick();
-    return () => { stop = true; };
-  }, []);
+  useEffect(()=>{ setStates(loadStates()) }, [rows.length])
 
   // Load cloud on mount
-
   useEffect(()=>{
     (async ()=>{
       try {

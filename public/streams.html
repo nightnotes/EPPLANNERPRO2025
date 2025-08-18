@@ -4,12 +4,34 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Streams</title>
+  <title>Night Notes — Streams Launcher + Totals</title>
   <link rel="stylesheet" href="/streams.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <script defer src="/streams.js"></script>
 </head>
 <body>
-  <div id="app"></div>
-  <script defer src="/streams.js"></script>
-  <script defer src="/streams-append.js"></script>
+  <div class="wrap">
+    <h1>Night Notes — Streams Launcher + Totals</h1>
+    <div class="card">
+      <div class="row">
+        <button class="btn-primary" id="openAll">Open alle dashboards</button>
+        <button class="btn" id="openSelected">Open geselecteerde</button>
+        <label class="muted">Dagen terug: <input id="daysBack" type="number" value="30" min="1" max="365"></label>
+        <label class="muted">Datum (toDate): <input id="toDate" type="date" placeholder="dd-mm-jjjj"></label>
+        <button class="btn" id="setYesterday">Set op gisteren</button>
+        <button class="btn" id="downloadCSV">Download CSV</button>
+      </div>
+      <div class="totalbar">
+        <div class="totalbadge"><strong>Totaal streams</strong>: <span id="grandTotal">0</span></div>
+      </div>
+      <div class="list" id="artistList"></div>
+      <p class="muted">Bewerk <code>public/artists.json</code> om artiesten toe te voegen. Geen scraping — je moet ingelogd zijn bij Spotify for Artists.</p>
+    </div>
+    <div class="card chart-wrap">
+      <h3>Historie & trend</h3>
+      <p class="muted">Dagtotalen (lijn), 7-daags gemiddelde (lijn), weekgemiddelde (stap-lijn). Hover voor exacte waardes.</p>
+      <div style="height:320px"><canvas id="streamsChart"></canvas></div>
+    </div>
+  </div>
 </body>
 </html>

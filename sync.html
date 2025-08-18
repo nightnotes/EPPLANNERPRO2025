@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Night Notes — Releases (Realtime Sync)</title>
+<style>
+  :root{--bg:#0b1020;--panel:#0f1630;--line:#1f2942;--text:#e9eefc;--muted:#a7b1d8;--green:#22c55e;--red:#ef4444;--purple:#6c76ff;}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px} h1{margin:0 0 12px 0}
+  .bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+  .pill{border:1px solid var(--line);border-radius:999px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px}
+  .ok{color:var(--green)} .bad{color:var(--red)} .muted{color:var(--muted)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  input,select,button{background:#0b132a;border:1px solid #27365e;color:var(--text);padding:8px 10px;border-radius:8px}
+  button.primary{background:var(--purple);border:none;color:#fff;cursor:pointer}
+  table{width:100%;border-collapse:collapse;margin-top:10px} th,td{border-bottom:1px solid var(--line);padding:10px 8px;font-size:14px;text-align:left}
+  .dot{width:10px;height:10px;border-radius:50%} .green{background:var(--green)} .red{background:var(--red)}
+  .right{margin-left:auto}
+  .small{font-size:12px;color:var(--muted)}
+  .footer{text-align:center;opacity:.6;margin-top:18px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar">
+      <h1>Releases — realtime</h1>
+      <div class="pill"><span id="cloud" class="bad">Cloud: niet verbonden</span></div>
+    </div>
+
+    <div class="card" id="loginCard">
+      <div class="row">
+        <strong>Login</strong>
+        <input id="name" placeholder="Naam (Martijn of Nuno)" />
+        <input id="pass" type="password" placeholder="Wachtwoord (123!)" />
+        <button id="doLogin" class="primary">Inloggen</button>
+        <span id="who" class="small"></span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:10px">
+      <div class="row">
+        <strong>Release toevoegen</strong>
+        <input type="date" id="d" />
+        <input placeholder="Artiest" id="a" style="min-width:220px" />
+        <select id="w"><option value="">Wie?</option><option>Martijn</option><option>Nuno</option></select>
+        <select id="dist"><option value="">Distributie</option><option>Distrokid</option><option>Amuse</option></select>
+        <button id="add" class="primary">Toevoegen</button>
+        <span class="right small">Build: 2025-08-18 13:01 UTC</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:10px">
+      <div class="row">
+        <label>Filter maand:</label>
+        <select id="month"></select>
+        <button id="allGreen" class="primary">Alles groen (maand)</button>
+        <button id="resetMonth">Reset maand</button>
+        <span class="right small">Legende: <span class="dot green"></span> klaar · <span class="dot red"></span> open — houd knop 2s voor undo</span>
+      </div>
+
+      <table id="tbl">
+        <thead><tr><th>Datum</th><th>Artiest</th><th>Wie?</th><th>Distributie</th><th>Status</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="footer">© Night Notes</div>
+  </div>
+
+<script type="module">
+  // --- Firebase setup ---
+  const cfg = {"apiKey": "AIzaSyDujrir7S_vNDfnNq0ZkcTMHKYxsN5Ba54", "authDomain": "night-notes-c92e3.firebaseapp.com", "projectId": "night-notes-c92e3", "storageBucket": "night-notes-c92e3.firebasestorage.app", "messagingSenderId": "417664221420", "appId": "1:417664221420:web:bdcad8555d9fe157f225c9", "measurementId": "G-56G2YPDWNC"};
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  let db; try { db = getFirestore(initializeApp(cfg)); document.getElementById('cloud').textContent='Cloud: verbonden'; document.getElementById('cloud').className='ok'; }
+  catch(e) { console.error(e); }
+
+  // --- Simple store in 1 Firestore document ---
+  const REF = () => doc(db,'night-notes','releases');
+
+  async function load() {
+    const snap = await getDoc(REF());
+    if (snap.exists()) return snap.data().value || [];
+    await setDoc(REF(), { value: [] });
+    return [];
+  }
+  async function save(list) { await setDoc(REF(), { value: list }); }
+
+  function listen(cb) { return onSnapshot(REF(), (snap)=> { if(snap.exists()) cb(snap.data().value||[]); }); }
+
+  // --- State + UI helpers ---
+  const $ = (s) => document.querySelector(s);
+  let releases = [];
+  let user = null;
+  const months = new Set();
+
+  function ymd(s) { const d=new Date(s); return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0')].join('-'); }
+  function fmt(s) { const d = new Date(s); return d.toLocaleDateString('nl-NL', { day:'2-digit', month:'2-digit', year:'numeric' }); }
+
+  function fillMonths() {
+    months.clear(); releases.forEach(r => months.add(ymd(r.date)));
+    const sel = $('#month'); sel.innerHTML='';
+    const optAll = document.createElement('option'); optAll.value='*'; optAll.textContent='Alle'; sel.appendChild(optAll);
+    Array.from(months).sort().forEach(m => { const o=document.createElement('option'); o.value=m; o.textContent=m; sel.appendChild(o); });
+  }
+
+  function render() {
+    fillMonths();
+    const sel = $('#month').value || '*';
+    const rows = $('#tbl tbody'); rows.innerHTML='';
+    releases
+      .filter(r => sel==='*' || ymd(r.date)===sel)
+      .sort((a,b)=> new Date(a.date)-new Date(b.date))
+      .forEach((r,i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${fmt(r.date)}</td><td>${r.artist}</td><td>${r.who||''}</td><td>${r.dist||''}</td>
+          <td><button data-i="${i}" class="toggle"><span class="dot ${r.done?'green':'red'}"></span></button></td>`;
+        rows.appendChild(tr);
+      });
+
+    document.querySelectorAll('button.toggle').forEach(btn => {
+      let hold; let idx = +btn.dataset.i;
+      btn.onmousedown = () => { hold = setTimeout(async () => {
+        const sel=$('#month').value||'*'; const m = sel==='*'?ymd(releases[idx].date):sel;
+        releases.forEach(r => { if(ymd(r.date)===m) r.done=true; });
+        await save(releases);
+      }, 2000); };
+      btn.onmouseup = btn.onmouseleave = () => clearTimeout(hold);
+      btn.onclick = async () => { releases[idx].done = !releases[idx].done; await save(releases); };
+    });
+  }
+
+  // Add release
+  $('#add').onclick = async () => {
+    if (!user) return alert('Eerst inloggen');
+    const date = $('#d').value, artist = $('#a').value.trim();
+    const who = $('#w').value||'', dist=$('#dist').value||'';
+    if (!date || !artist) return alert('Datum en artiest zijn verplicht');
+    releases.push({ date, artist, who, dist, done:false });
+    await save(releases);
+    $('#a').value='';
+  };
+
+  // Month actions
+  $('#allGreen').onclick = async () => {
+    const sel=$('#month').value||'*'; if(sel==='*') return alert('Kies eerst een maand');
+    releases.forEach(r => { if(ymd(r.date)===sel) r.done=true; });
+    await save(releases);
+  };
+  $('#resetMonth').onclick = async () => {
+    const sel=$('#month').value||'*'; if(sel==='*') return alert('Kies eerst een maand');
+    releases.forEach(r => { if(ymd(r.date)===sel) r.done=false; });
+    await save(releases);
+  };
+  $('#month').onchange = render;
+
+  // Login
+  $('#doLogin').onclick = () => {
+    const n=$('#name').value.trim(), p=$('#pass').value;
+    const ok=(n==='Martijn' || n==='Nuno') && p==='123!';
+    if(!ok) return alert('Onjuiste login');
+    user=n; $('#who').textContent = 'Ingelogd als: '+n; $('#loginCard').style.display='none';
+  };
+
+  // Boot
+  releases = await load(); render();
+  listen(list => { releases = list; render(); });
+</script>
+</body>
+</html>

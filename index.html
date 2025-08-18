@@ -6,10 +6,11 @@
   <title>Night Notes – EP Planner</title>
   <style>
 *{box-sizing:border-box}body{font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;background:#0b1020;color:#e9eefc}
-.header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1f2942}
-.container{max-width:1100px;margin:0 auto;padding:16px}
+.header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1f2942;position:sticky;top:0;background:#0b1020;z-index:10}
+.container{max-width:1200px;margin:0 auto;padding:16px}
 .card{background:#0f1630;border:1px solid #1f2942;border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.35)}
 .row{display:flex;gap:10px;align-items:center}
+.grid{display:grid}
 .tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .tab{padding:10px 14px;border-radius:999px;border:1px solid #2a375d;background:#0f1630;cursor:pointer}
 .tab.active{background:#1a2750}
@@ -22,37 +23,24 @@
 .dot{width:10px;height:10px;border-radius:50%}.dot.red{background:#ef4444}.dot.green{background:#22c55e}
 .footer{opacity:.6;font-size:12px;text-align:center;padding:16px}
 .login{min-height:45vh;display:flex;align-items:center;justify-content:center}
+h2{margin:0 0 8px 0}
+.small{font-size:12px;opacity:.75}
 </style>
 </head>
 <body>
   <div id="app" class="container"></div>
-  <div class="footer">© Night Notes • build: 2025-08-18 11:11:23 UTC</div>
+  <div class="footer">© Night Notes • build: 2025-08-18 11:38:26 UTC</div>
   <script>
 (()=>{
-  const EMBED = {
-    releases: [{"date": "2025-09-03", "artist": "Eleanor Moon", "type": "Core", "owner": "NUNEAUX", "done": false, "splits": false, "buma": false}, {"date": "2025-09-06", "artist": "Sleepy Delrow", "type": "Core", "owner": "NUNEAUX", "done": false, "splits": false, "buma": false}, {"date": "2025-09-09", "artist": "Soft Dawn", "type": "Core", "owner": "NUNEAUX", "done": false, "splits": false, "buma": false}, {"date": "2025-09-13", "artist": "Ludo Legato", "type": "Core", "owner": "ERRY", "done": false, "splits": false, "buma": false}],
-    artists: [{"name": "Eleanor Moon"}, {"name": "Sleepy Delrow"}, {"name": "Soft Dawn"}, {"name": "Ludo Legato"}]
-  };
   const USERS = [{name:"Martijn",password:"123!"},{name:"Nuno",password:"123!"}];
+  const FIREBASE_CONFIG = {"apiKey": "AIzaSyDujrir7S_vNDfnNq0ZkcTMHKYxsN5Ba54", "authDomain": "night-notes-c92e3.firebaseapp.com", "projectId": "night-notes-c92e3", "storageBucket": "night-notes-c92e3.firebasestorage.app", "messagingSenderId": "417664221420", "appId": "1:417664221420:web:bdcad8555d9fe157f225c9", "measurementId": "G-56G2YPDWNC"};
   const $=(s,c=document)=>c.querySelector(s);
   const fmt = s => new Date(s).toLocaleDateString('nl-NL',{year:'numeric',month:'2-digit',day:'2-digit'});
 
   const Sync = {
     useFirebase:false, db:null, status:'Offline', mod:null,
     async init(){
-      try{
-        // Try local stored config first
-        const saved = localStorage.getItem('firebaseConfig');
-        if(saved) { const cfg=JSON.parse(saved); return await this.enable(cfg); }
-        // Auto-load /firebase-config.json if present
-        const r = await fetch('firebase-config.json?ts='+Date.now());
-        if(r.ok){
-          const cfg = await r.json();
-          localStorage.setItem('firebaseConfig', JSON.stringify(cfg));
-          return await this.enable(cfg);
-        }
-      }catch(e){}
-      return false;
+      try{ return await this.enable(FIREBASE_CONFIG); }catch(e){ console.error(e); return false; }
     },
     async enable(cfg){
       try{
@@ -90,7 +78,7 @@
     }
   };
 
-  const state = { user: JSON.parse(localStorage.getItem('user')||'null'), tab:'Releases', releases:null, artists:EMBED.artists, streams:[] };
+  const state = { user: JSON.parse(localStorage.getItem('user')||'null'), tab:'Releases', releases:[], streams:[] };
 
   function header(){
     const h=document.createElement('div'); h.className='header';
@@ -104,41 +92,68 @@
 
   function tabs(curr,set){
     const w=document.createElement('div'); w.className='tabs';
-    ['Releases','EP Checklist','Streams','Advertentiebeheer'].forEach(t=>{
-      const b=document.createElement('button'); b.className='tab'+(t===curr?' active':''); b.textContent=t; b.onclick=()=>set(t); w.appendChild(b);
-    });
+    ['Releases','EP Checklist','Streams','Advertentiebeheer'].forEach(t=>{ const b=document.createElement('button'); b.className='tab'+(t===curr?' active':''); b.textContent=t; b.onclick=()=>set(t); w.appendChild(b); });
     return w;
   }
 
   function viewLogin(){
     const box=document.createElement('div'); box.className='card login';
     box.innerHTML=`<form class="grid" style="min-width:320px;gap:12px">
-      <h2 style="text-align:center;margin:0">Inloggen</h2>
-      <input class="input" name="name" placeholder="Naam (Martijn/Nuno)" />
-      <input class="input" name="pass" type="password" placeholder="Wachtwoord (123!)" />
+      <h2 style="text-align:center">Inloggen</h2>
+      <input class="input" name="name" placeholder="Naam (Martijn/Nuno)"/>
+      <input class="input" name="pass" type="password" placeholder="Wachtwoord (123!)"/>
       <button class="button" type="submit">Login</button>
     </form>`;
-    box.querySelector('form').onsubmit=(e)=>{
-      e.preventDefault();
-      const n=e.target.name.value.trim(), p=e.target.pass.value;
-      const ok=USERS.find(u=>u.name.toLowerCase()===n.toLowerCase() && u.password===p);
-      if(!ok) return alert('Onjuiste login');
-      state.user=ok.name; localStorage.setItem('user',JSON.stringify(state.user)); render();
-    };
+    box.querySelector('form').onsubmit=(e)=>{e.preventDefault(); const n=e.target.name.value.trim(), p=e.target.pass.value; const ok=USERS.find(u=>u.name.toLowerCase()===n.toLowerCase()&&u.password===p); if(!ok) return alert('Onjuiste login'); state.user=ok.name; localStorage.setItem('user',JSON.stringify(state.user)); render(); };
     return box;
   }
 
+  function addReleaseForm(onAdd){
+    const f=document.createElement('div'); f.className='card'; f.style.marginBottom='12px';
+    f.innerHTML=`<div class="row" style="gap:8px;flex-wrap:wrap">
+      <h2>Release toevoegen</h2>
+      <span class="small">(Minimaal datum + artiest; Owner & Type optioneel)</span>
+    </div>
+    <div class="row" style="gap:8px;flex-wrap:wrap">
+      <input class="input" type="date" id="relDate"/>
+      <input class="input" placeholder="Artiest" id="relArtist" style="min-width:220px"/>
+      <select class="input" id="relOwner">
+        <option value="">Owner (leeg = onbekend)</option>
+        <option>ERRY</option><option>NUNEAUX</option><option>ADHD</option><option>EXTRA</option>
+      </select>
+      <select class="input" id="relType">
+        <option value="">Type</option>
+        <option>Core</option><option>Extra</option><option>ADHD Sleep</option>
+      </select>
+      <button class="button" id="addBtn">Toevoegen</button>
+    </div>`;
+    f.querySelector('#addBtn').onclick=()=>{
+      const date=f.querySelector('#relDate').value;
+      const artist=f.querySelector('#relArtist').value.trim();
+      const owner=f.querySelector('#relOwner').value||'';
+      const type=f.querySelector('#relType').value||'';
+      if(!date||!artist) return alert('Datum en artiest zijn verplicht');
+      onAdd({date, artist, owner, type, done:false, splits:false, buma:false});
+    };
+    return f;
+  }
+
   function releasesView(){
+    const wrap=document.createElement('div'); 
+    wrap.appendChild(addReleaseForm(async (item)=>{ state.releases.push(item); await Sync.set('releases', state.releases); renderBody(); }));
+
     const card=document.createElement('div'); card.className='card';
     const top=document.createElement('div'); top.className='row'; top.style.cssText='justify-content:space-between;gap:10px;flex-wrap:wrap';
     const left=document.createElement('div'); left.className='row';
     const search=document.createElement('input'); search.className='input'; search.placeholder='Zoek op artiest';
     const only=document.createElement('input'); only.type='checkbox'; const lbl=document.createElement('label'); lbl.className='row'; lbl.textContent=' Alleen open'; lbl.prepend(only);
-    left.appendChild(search); left.appendChild(lbl);
+    const ownerSel=document.createElement('select'); ownerSel.className='input'; ['Alle owners','ERRY','NUNEAUX','ADHD','EXTRA'].forEach(v=>{const o=document.createElement('option');o.value=v;o.text=v;ownerSel.appendChild(o);});
+    const typeSel=document.createElement('select'); typeSel.className='input'; ['Alle types','Core','Extra','ADHD Sleep'].forEach(v=>{const o=document.createElement('option');o.value=v;o.text=v;typeSel.appendChild(o);});
+    left.appendChild(search); left.appendChild(lbl); left.appendChild(ownerSel); left.appendChild(typeSel);
     const cnt=document.createElement('span'); cnt.className='badge'; cnt.textContent='0 releases';
     top.appendChild(left); top.appendChild(cnt); card.appendChild(top);
 
-    const scroller=document.createElement('div'); scroller.style.cssText='overflow:auto;max-height:64vh;margin-top:8px';
+    const scroller=document.createElement('div'); scroller.style.cssText='overflow:auto;max-height:60vh;margin-top:8px';
     const table=document.createElement('table'); table.className='table';
     table.innerHTML='<thead><tr><th>Datum</th><th>Artiest</th><th>Type</th><th>Owner</th><th>Status</th><th>Splits</th><th>Buma/Stemra</th></tr></thead><tbody></tbody>';
     const tbody=table.querySelector('tbody'); scroller.appendChild(table); card.appendChild(scroller);
@@ -147,47 +162,86 @@
       const q=(search.value||'').toLowerCase();
       const list=state.releases
         .filter(r=>!q||(r.artist||'').toLowerCase().includes(q))
-        .filter(r=>!only.checked || !r.done)
+        .filter(r=>!only.checked||!r.done)
+        .filter(r=> ownerSel.value==='Alle owners' || (r.owner||'')===ownerSel.value )
+        .filter(r=> typeSel.value==='Alle types' || (r.type||'')===typeSel.value )
         .sort((a,b)=> new Date(a.date)-new Date(b.date));
       cnt.textContent=`${list.length} releases`;
       tbody.innerHTML='';
-      list.forEach(r=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${fmt(r.date)}</td><td>${r.artist}</td>
+      list.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML=`
+          <td>${fmt(r.date)}</td><td>${r.artist}</td>
           <td><span class="badge">${r.type||''}</span></td>
           <td><span class="badge">${r.owner||''}</span></td>
           <td><div class="row"><div class="dot ${r.done?'green':'red'}"></div><button class="button ghost">${r.done?'Klaar':'Open'}</button></div></td>
           <td><input type="checkbox" ${r.splits?'checked':''}></td>
           <td><input type="checkbox" ${r.buma?'checked':''}></td>`;
-        tr.querySelector('button').onclick=async()=>{ r.done=!r.done; await Sync.set('releases', state.releases); redraw(); };
-        const [c1,c2]=tr.querySelectorAll('input');
-        c1.onchange=async e=>{ r.splits=e.target.checked; await Sync.set('releases', state.releases); };
-        c2.onchange=async e=>{ r.buma=e.target.checked; await Sync.set('releases', state.releases); };
+        tr.querySelector('button').onclick=async()=>{r.done=!r.done; await Sync.set('releases',state.releases); redraw();};
+        const [c1,c2]=tr.querySelectorAll('input'); c1.onchange=async e=>{r.splits=e.target.checked; await Sync.set('releases',state.releases);}; c2.onchange=async e=>{r.buma=e.target.checked; await Sync.set('releases',state.releases);};
         tbody.appendChild(tr);
       });
     }
-    [search,only].forEach(el=>el.addEventListener('input',redraw));
-    redraw();
-    return card;
+    [search,only,ownerSel,typeSel].forEach(el=>el.addEventListener('input',redraw));
+    redraw(); 
+    const wrap2=document.createElement('div'); wrap2.appendChild(card); return wrap2;
+  }
+
+  function epChecklist(){
+    const card=document.createElement('div'); card.className='card grid'; card.style.gap='16px';
+    const pending=state.releases.filter(r=>!r.done).sort((a,b)=> new Date(a.date)-new Date(b.date));
+    if(!pending.length){ card.textContent='Geen open items 🎉'; return card; }
+    const tgt=pending[0];
+    const box=document.createElement('div'); box.className='card'; box.innerHTML=`
+      <div class="row" style="justify-content:space-between"><strong>${tgt.artist}</strong><span class="badge">${fmt(tgt.date)}</span></div>
+      <div class="row" style="gap:8px;margin-top:8px">
+        <label class="row" style="gap:6px"><input type="checkbox" ${tgt.splits?'checked':''} class="splits"/> <span>Splits</span></label>
+        <label class="row" style="gap:6px"><input type="checkbox" ${tgt.buma?'checked':''} class="buma"/> <span>Buma/Stemra</span></label>
+      </div>
+      <div class="row" style="gap:8px;margin-top:8px;flex-wrap:wrap">
+        <a class="button ghost" href="https://distrokid.com/" target="_blank">DistroKid</a>
+        <a class="button ghost" href="https://www.amuse.io/" target="_blank">Amuse</a>
+        <a class="button ghost" href="https://portal.bumastemra.nl/" target="_blank">Buma/Stemra</a>
+        <a class="button ghost" href="#" onclick="alert('Upload artworks link in de app')">Artworks</a>
+      </div>
+      <div style="margin-top:10px"><button class="button mark">Markeer als klaar</button></div>`;
+    box.querySelector('.splits').onchange=async e=>{tgt.splits=e.target.checked; await Sync.set('releases',state.releases);};
+    box.querySelector('.buma').onchange=async e=>{tgt.buma=e.target.checked; await Sync.set('releases',state.releases);};
+    box.querySelector('.mark').onclick=async()=>{ if(!tgt.splits||!tgt.buma) return alert('Eerst Splits en Buma/Stemra afvinken'); tgt.done=true; await Sync.set('releases',state.releases); renderBody(); };
+    card.appendChild(box); return card;
   }
 
   function streamsView(){
-    const card=document.createElement('div'); card.className='card';
-    card.innerHTML='<div class="badge">Streams demo — gedeeld via Firestore document "streams"</div>';
-    return card;
+    const wrap=document.createElement('div'); wrap.className='grid'; wrap.style.gap='12px';
+    const top=document.createElement('div'); top.className='card grid'; top.style.gap='10px';
+    const row=document.createElement('div'); row.className='row'; row.style.cssText='gap:8px;flex-wrap:wrap';
+    const date=document.createElement('input'); date.type='date'; const d=new Date(); d.setDate(d.getDate()-1); date.value=d.toISOString().slice(0,10);
+    const artist=document.createElement('input'); artist.className='input'; artist.placeholder='Artiest';
+    const num=document.createElement('input'); num.type='number'; num.min='0'; num.placeholder='Streams (gisteren)'; num.className='input';
+    const add=document.createElement('button'); add.className='button'; add.textContent='Toevoegen';
+    row.appendChild(date); row.appendChild(artist); row.appendChild(num); row.appendChild(add); top.appendChild(row); wrap.appendChild(top);
+    const list=document.createElement('div'); list.className='card'; wrap.appendChild(list);
+
+    function draw(){
+      list.innerHTML='';
+      const entries=state.streams.slice().sort((a,b)=> a.date.localeCompare(b.date)||a.artist.localeCompare(b.artist));
+      const table=document.createElement('table'); table.className='table'; table.innerHTML='<thead><tr><th>Datum</th><th>Artiest</th><th>Streams</th></tr></thead><tbody></tbody>'; const tbody=table.querySelector('tbody');
+      entries.forEach(e=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${e.date}</td><td>${e.artist}</td><td>${e.count}</td>`; tbody.appendChild(tr); });
+      list.appendChild(table);
+    }
+    add.onclick=async()=>{ if(!artist.value||!num.value) return; state.streams.push({date:date.value,artist:artist.value,count:Number(num.value)}); await Sync.set('streams',state.streams); num.value=''; draw(); };
+    draw(); return wrap;
   }
 
   function adsView(){
-    const card=document.createElement('div'); card.className='card';
-    card.innerHTML='<a class="button" href="https://eppplannerpro.netlify.app/" target="_blank">Open Advertentiebeheer</a>';
-    return card;
+    const card=document.createElement('div'); card.className='card center'; card.style.minHeight='30vh';
+    const a=document.createElement('a'); a.className='button'; a.href='https://eppplannerpro.netlify.app/'; a.target='_blank'; a.textContent='Open Advertentiebeheer';
+    card.appendChild(a); return card;
   }
 
-  function body(){
+  function renderBody(){
     const app=document.getElementById('app'); app.innerHTML='';
-    const nav=tabs(state.tab,(t)=>{ state.tab=t; body(); }); app.appendChild(nav);
+    const nav=tabs(state.tab,(t)=>{state.tab=t; renderBody();}); app.appendChild(nav);
     if(state.tab==='Releases') app.appendChild(releasesView());
-    else if(state.tab==='EP Checklist') app.appendChild(document.createTextNode('Nog in ontwikkeling'));
+    else if(state.tab==='EP Checklist') app.appendChild(epChecklist());
     else if(state.tab==='Streams') app.appendChild(streamsView());
     else app.appendChild(adsView());
   }
@@ -195,15 +249,16 @@
   async function boot(){
     document.body.prepend(header());
     await Sync.init();
-    $('#syncStatus').textContent='Sync: '+Sync.status;
-    const saved = await Sync.get('releases', null);
-    state.releases = saved || EMBED.releases;
-    if(!saved) await Sync.set('releases', state.releases);
+    document.getElementById('syncStatus').textContent='Sync: '+Sync.status;
+    const savedReleases = await Sync.get('releases', null);
+    state.releases = savedReleases ?? [];
+    if(savedReleases===null) await Sync.set('releases', state.releases);
     state.streams = await Sync.get('streams', []);
-    if(!state.user) document.getElementById('app').appendChild(viewLogin()); else body();
-    Sync.listen('releases',(val)=>{ state.releases=val; if(state.tab==='Releases') body(); });
-    Sync.listen('streams',(val)=>{ state.streams=val; if(state.tab==='Streams') body(); });
+    if(!state.user) document.getElementById('app').appendChild(viewLogin()); else renderBody();
+    Sync.listen('releases',(val)=>{ state.releases=val; if(state.tab==='Releases'||state.tab==='EP Checklist') renderBody(); });
+    Sync.listen('streams',(val)=>{ state.streams=val; if(state.tab==='Streams') renderBody(); });
   }
+  function render(){ document.body.innerHTML=''; document.body.prepend(header()); if(!state.user) document.getElementById('app').appendChild(viewLogin()); else renderBody(); }
   boot();
 })();
 </script>

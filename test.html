@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Firestore Smoke Test — Night Notes</title>
+<style>
+ body{font-family:system-ui,Segoe UI,Arial,sans-serif;background:#0b1020;color:#e9eefc;margin:0;padding:24px}
+ .card{background:#0f1630;border:1px solid #1f2942;border-radius:14px;padding:16px;max-width:780px}
+ .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+ input,button{padding:10px 12px;border-radius:10px;border:1px solid #2a375d;background:#0b132a;color:#e9eefc}
+ button{background:#3357ff;border:none;cursor:pointer}
+ code,pre{background:#0b132a;border:1px solid #27365e;border-radius:10px;padding:12px;display:block;white-space:pre-wrap;word-break:break-word}
+ .ok{color:#22c55e} .err{color:#ef4444} .muted{opacity:.75}
+</style>
+</head>
+<body>
+<h1>Firestore Smoke Test</h1>
+<p class="muted">Check of twee browsers <strong>dezelfde cloud-data</strong> zien.</p>
+<div class="card">
+  <div class="row"><strong>Status:</strong>
+    <span id="status">verbinding maken…</span>
+  </div>
+  <hr>
+  <div class="row">
+    <label>Documentpad:</label>
+    <input id="path" value="night-notes/debug" style="min-width:280px">
+    <button id="listen">Luister</button>
+  </div>
+  <p class="muted">Laat het pad zo — beide vensters delen hetzelfde document.</p>
+  <h3>Live waarde (realtime):</h3>
+  <pre id="live">(nog niets)</pre>
+  <div class="row">
+    <input id="value" placeholder='bv. "ping" of 123' style="min-width:280px">
+    <button id="write">Schrijf naar cloud</button>
+    <button id="writeTime">Schrijf timestamp</button>
+  </div>
+</div>
+
+<script type="module">
+  const cfg = {"apiKey": "AIzaSyDujrir7S_vNDfnNq0ZkcTMHKYxsN5Ba54", "authDomain": "night-notes-c92e3.firebaseapp.com", "projectId": "night-notes-c92e3", "storageBucket": "night-notes-c92e3.firebasestorage.app", "messagingSenderId": "417664221420", "appId": "1:417664221420:web:bdcad8555d9fe157f225c9", "measurementId": "G-56G2YPDWNC"};
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  let db;
+  try { const app = initializeApp(cfg); db = getFirestore(app); document.getElementById('status').innerHTML = '<span class="ok">Cloud: verbonden</span>'; }
+  catch(e) { document.getElementById('status').innerHTML = '<span class="err">Cloud: fout</span> ' + e; }
+
+  let stopListen = () => {};
+
+  document.getElementById('listen').onclick = async () => {
+    stopListen(); document.getElementById('live').textContent = '(luisteren…)';
+    const path = document.getElementById('path').value.trim();
+    const [col, id] = path.split('/');
+    const ref = doc(db, col, id);
+    stopListen = onSnapshot(ref, (snap) => {
+      if (snap.exists()) { document.getElementById('live').textContent = JSON.stringify(snap.data(), null, 2); }
+      else { document.getElementById('live').textContent = '(bestaat nog niet)'; }
+    });
+  };
+
+  document.getElementById('write').onclick = async () => {
+    const path = document.getElementById('path').value.trim(); const [col, id] = path.split('/');
+    const ref = doc(db, col, id);
+    let val; try { val = JSON.parse(document.getElementById('value').value); } catch(e) { val = { value: document.getElementById('value').value }; }
+    await setDoc(ref, val); alert('Geschreven ✅');
+  };
+
+  document.getElementById('writeTime').onclick = async () => {
+    const path = document.getElementById('path').value.trim(); const [col, id] = path.split('/');
+    const ref = doc(db, col, id);
+    const now = new Date().toISOString();
+    await setDoc(ref, { time: now, note: 'hello from smoke test' }); alert('Timestamp geschreven ✅');
+  };
+
+  // meteen starten
+  document.getElementById('listen').click();
+</script>
+</body>
+</html>

@@ -1,41 +1,43 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="nl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Night Notes – EP Planner</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <script>
-      if (location.protocol === 'http:') location.href = location.href.replace('http:', 'https:');
-    </script>
-  </head>
-  <body class="bg-gradient-to-b from-nn_bg1 to-nn_bg2 text-nn_text font-inter">
-<div class="stars stars-2"></div>
-  <div class="stars stars-3"></div>
-  <div class="shooting shooting-1"></div>
-  <div class="shooting shooting-2"></div>
-  <div class="shooting shooting-3"></div>
-</div>
-<div class="sky stars s2"></div>
-  <div class="sky stars s3"></div>
-  <div class="sky meteor m1"></div>
-  <div class="sky meteor m2"></div>
-  <div class="sky meteor m3"></div>
-</div>
+<head>
+  <meta charset="UTF-8">
+  <title>EP Planner Pro - Releases</title>
+  <style>
+    body { background: #0e0e1a; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #444; padding: 8px; text-align: left; }
+    th { background: #222; }
+    .dot { height: 15px; width: 15px; border-radius: 50%; display: inline-block; }
+    .red { background-color: red; }
+    .green { background-color: green; }
+    #cloud-status { position: fixed; bottom: 10px; right: 10px; padding: 6px 12px; background: #222; border: 1px solid #444; border-radius: 8px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>Releases</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Artiest</th>
+        <th>Wie?</th>
+        <th>Distributie</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="release-table">
+      <tr>
+        <td>25-08-2025</td><td>Muted Mind</td><td>Nuno</td><td>Distrokid</td><td><span class="dot red"></span></td>
+      </tr>
+      <tr>
+        <td>26-08-2025</td><td>Dreamflow</td><td>Martijn</td><td>Amuse</td><td><span class="dot red"></span></td>
+      </tr>
+    </tbody>
+  </table>
 
-<div id="sky-bg">
-  <div class="stars tw1"></div>
-  <div class="stars tw2"></div>
-  <div class="stars tw3"></div>
-</div>
-<div id="root"></div>
+  <div id="cloud-status">Cloud: verbinden…</div>
 
-
-
-    <script type="module" src="/src/main.tsx"></script>
-  <script defer src="./releases-sync-vanilla.js"></script>
+  <script src="sync.js" defer></script>
 </body>
 </html>

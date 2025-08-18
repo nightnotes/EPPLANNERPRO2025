@@ -1,23 +1,22 @@
 <!doctype html>
 <html lang="nl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Night Notes — Releases (Realtime Sync)</title>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Releases — realtime</title>
 <style>
-  :root{--bg:#0b1020;--panel:#0f1630;--line:#1f2942;--text:#e9eefc;--muted:#a7b1d8;--green:#22c55e;--red:#ef4444}
-  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
-  .wrap{max-width:1100px;margin:0 auto;padding:18px} .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}
-  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap} .small{font-size:12px;color:var(--muted)}
-  input,select,button{background:#0b132a;border:1px solid #27365e;color:var(--text);padding:8px 10px;border-radius:10px}
-  button.primary{background:#6c76ff;border:none;color:#fff;cursor:pointer} .dot{width:10px;height:10px;border-radius:50%} .green{background:var(--green)} .red{background:var(--red)}
-  table{width:100%;border-collapse:collapse} th,td{border-bottom:1px solid var(--line);padding:10px 8px;font-size:14px;text-align:left}
+:root{--bg:#0b1020;--panel:#0f1630;--line:#1f2942;--text:#e9eefc;--muted:#a7b1d8;--green:#22c55e;--red:#ef4444}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+.wrap{max-width:1100px;margin:0 auto;padding:18px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.small{font-size:12px;color:var(--muted)}
+input,select,button{background:#0b132a;border:1px solid #27365e;color:var(--text);padding:8px 10px;border-radius:10px}
+button.primary{background:#6c76ff;border:none;color:#fff;cursor:pointer} .dot{width:10px;height:10px;border-radius:50%} .green{background:var(--green)} .red{background:var(--red)}
+table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid var(--line);padding:10px 8px;font-size:14px;text-align:left}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="card">
-    <div class="row"><h2 style="margin:0">Releases — realtime</h2><span id="cloud" class="small">Cloud: …</span><span class="small" style="margin-left:auto">build 2025-08-18 13:59 UTC</span></div>
+    <div class="row"><h2 style="margin:0">Releases — realtime</h2><span id="cloud" class="small">Cloud: …</span><span class="small" style="margin-left:auto">build 2025-08-18 14:04 UTC</span></div>
   </div>
 
   <div class="card" id="login">
@@ -52,58 +51,27 @@
 </div>
 
 <script type="module">
-  // Firestore helpers (embedded)
-  const cfg = {"apiKey": "AIzaSyDujrir7S_vNDfnNq0ZkcTMHKYxsN5Ba54", "authDomain": "night-notes-c92e3.firebaseapp.com", "projectId": "night-notes-c92e3", "storageBucket": "night-notes-c92e3.firebasestorage.app", "messagingSenderId": "417664221420", "appId": "1:417664221420:web:bdcad8555d9fe157f225c9", "measurementId": "G-56G2YPDWNC"};
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  const db = getFirestore(initializeApp(cfg));
-  const REF = ()=> doc(db,'night-notes','releases');
-  const $=s=>document.querySelector(s);
-  $('#cloud').textContent='Cloud: verbonden';
+const cfg = {"apiKey": "AIzaSyDujrir7S_vNDfnNq0ZkcTMHKYxsN5Ba54", "authDomain": "night-notes-c92e3.firebaseapp.com", "projectId": "night-notes-c92e3", "storageBucket": "night-notes-c92e3.firebasestorage.app", "messagingSenderId": "417664221420", "appId": "1:417664221420:web:bdcad8555d9fe157f225c9", "measurementId": "G-56G2YPDWNC"};
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const db = getFirestore(initializeApp(cfg));
+document.getElementById('cloud').textContent='Cloud: verbonden';
+const REF=()=>doc(db,'night-notes','releases');
+const $=s=>document.querySelector(s); const fmt=s=>new Date(s).toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'});
+let user=null, releases=[];
 
-  let user=null, releases=[];
-  const fmt = s => new Date(s).toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'});
-  const ymd = s => { const d=new Date(s); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); };
+async function load(){const s=await getDoc(REF()); if(s.exists()) return s.data().value||[]; await setDoc(REF(),{value:[]}); return [];}
+async function save(list){await setDoc(REF(),{value:list})}
+function listen(cb){return onSnapshot(REF(),snap=>{if(snap.exists()) cb(snap.data().value||[])})}
 
-  async function load(){ const s=await getDoc(REF()); if(s.exists()) return s.data().value||[]; await setDoc(REF(),{value:[]}); return []; }
-  async function save(list){ await setDoc(REF(),{value:list}); }
-  function listen(cb){ return onSnapshot(REF(), s=>{ if(s.exists()) cb(s.data().value||[]); }); }
-
-  $('#go').onclick = ()=>{ const n=$('#name').value.trim(), p=$('#pass').value; if(!((n==='Martijn'||n==='Nuno')&&p==='123!')) return alert('Onjuiste login'); user=n; $('#login').style.display='none'; $('#who').textContent='Ingelogd als: '+n; };
-
-  function fillMonths(){
-    const ms=Array.from(new Set(releases.map(r=>ymd(r.date)))).sort();
-    const sel=$('#m'); sel.innerHTML=''; const all=document.createElement('option'); all.value='*'; all.textContent='Alle'; sel.appendChild(all);
-    ms.forEach(m=>{ const o=document.createElement('option'); o.value=m; o.textContent=m; sel.appendChild(o); });
-  }
-  function render(){
-    fillMonths(); const sel=$('#m').value||'*'; const body=document.querySelector('tbody'); body.innerHTML='';
-    releases.filter(r=>sel==='*'||ymd(r.date)===sel).sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach((r,i)=>{
-      const tr=document.createElement('tr');
-      tr.innerHTML = `<td>${fmt(r.date)}</td><td>${r.artist}</td><td>${r.who||''}</td><td>${r.dist||''}</td>
-        <td><button data-i="${i}" class="tog"><span class="dot ${r.done?'green':'red'}"></span></button></td>`;
-      body.appendChild(tr);
-    });
-    document.querySelectorAll('button.tog').forEach(btn=>{
-      const idx=+btn.dataset.i; let t;
-      btn.onmousedown = ()=> { t=setTimeout(async()=>{ const m=(($('#m').value||'*')==='*'?ymd(releases[idx].date):$('#m').value); releases.forEach(r=>{ if(ymd(r.date)===m) r.done=true; }); await save(releases); },2000); };
-      btn.onmouseup = btn.onmouseleave = ()=> clearTimeout(t);
-      btn.onclick = async ()=> { 
-        if(!releases[idx].done){ /* kan hier check op splits/buma toevoegen als je velden hebt */ }
-        releases[idx].done=!releases[idx].done; await save(releases); 
-      };
-    });
-  }
-
-  $('#add').onclick = async ()=>{ if(!user) return alert('Eerst inloggen');
-    const d=$('#d').value, a=$('#a').value.trim(), w=$('#w').value||'', dist=$('#dist').value||'';
-    if(!d||!a) return alert('Datum + Artiest verplicht'); releases.push({date:d,artist:a,who:w,dist,done:false}); await save(releases); $('#a').value='';
-  };
-  $('#all').onclick = async ()=>{ const m=$('#m').value||'*'; if(m==='*') return alert('Kies maand'); releases.forEach(r=>{ if(ymd(r.date)===m) r.done=true; }); await save(releases); };
-  $('#reset').onclick = async ()=>{ const m=$('#m').value||'*'; if(m==='*') return alert('Kies maand'); releases.forEach(r=>{ if(ymd(r.date)===m) r.done=false; }); await save(releases); };
-  $('#m').onchange = render;
-
-  releases = await load(); render(); listen(list=>{ releases=list; render(); });
+$('#go').onclick=()=>{const n=$('#name').value.trim(),p=$('#pass').value;if(!((n==='Martijn'||n==='Nuno')&&p==='123!'))return alert('Onjuiste login');user=n;$('#login').style.display='none';$('#who').textContent='Ingelogd als: '+n;};
+const ymd=s=>{const d=new Date(s);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');};
+function fillMonths(){const ms=Array.from(new Set(releases.map(r=>ymd(r.date)))).sort();const sel=$('#m');sel.innerHTML='';const all=document.createElement('option');all.value='*';all.textContent='Alle';sel.appendChild(all);ms.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);})};
+function render(){fillMonths();const sel=$('#m').value||'*';const body=document.querySelector('tbody');body.innerHTML='';releases.filter(r=>sel==='*'||ymd(r.date)===sel).sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach((r,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${fmt(r.date)}</td><td>${r.artist}</td><td>${r.who||''}</td><td>${r.dist||''}</td><td><button data-i="${i}" class="tog"><span class="dot ${r.done?'green':'red'}"></span></button></td>`;body.appendChild(tr);});document.querySelectorAll('button.tog').forEach(btn=>{const idx=+btn.dataset.i;let t;btn.onmousedown=()=>{t=setTimeout(async()=>{const m=(($('#m').value||'*')==='*'?ymd(releases[idx].date):$('#m').value);releases.forEach(r=>{if(ymd(r.date)===m)r.done=true;});await save(releases);},2000);};btn.onmouseup=btn.onmouseleave=()=>clearTimeout(t);btn.onclick=async()=>{releases[idx].done=!releases[idx].done;await save(releases);};});}
+$('#add').onclick=async()=>{if(!user)return alert('Eerst inloggen');const d=$('#d').value,a=$('#a').value.trim(),w=$('#w').value||'',dist=$('#dist').value||'';if(!d||!a)return alert('Datum+Artiest verplicht');releases.push({date:d,artist:a,who:w,dist,done:false});await save(releases);$('#a').value='';};
+$('#all').onclick=async()=>{const m=$('#m').value||'*';if(m==='*')return alert('Kies maand');releases.forEach(r=>{if(ymd(r.date)===m)r.done=true;});await save(releases);};
+$('#reset').onclick=async()=>{const m=$('#m').value||'*';if(m==='*')return alert('Kies maand');releases.forEach(r=>{if(ymd(r.date)===m)r.done=false;});await save(releases);};
+$('#m').onchange=render;
+releases=await load();render();listen(list=>{releases=list;render();});
 </script>
-</body>
-</html>
+</body></html>

@@ -1,276 +1,41 @@
+
 <!doctype html>
 <html lang="nl">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Night Notes – EP Planner</title>
-<meta name="color-scheme" content="dark light">
-<style>
-:root{{--bg:#0b1020;--panel:#0f1630;--line:#1f2942;--text:#e9eefc;--muted:#a7b1d8;--green:#22c55e;--red:#ef4444;--purple:#6c76ff;--accent:#815cff}}
-*{{box-sizing:border-box}} body{{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}}
-.header{{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}}
-.brand{{font-weight:700}} .nav{{display:flex;gap:8px;flex-wrap:wrap}} .nav button{{background:#121a36;border:1px solid #27365e;color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}}
-.nav .active{{background:#1a2750;border-color:#3a4b7b}} .container{{max-width:1200px;margin:0 auto;padding:18px}}
-.card{{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}}
-.row{{display:flex;gap:10px;align-items:center;flex-wrap:wrap}}
-.badge{{border:1px solid var(--line);padding:6px 10px;border-radius:999px;font-size:12px}}
-input,select,button{{background:#0b132a;border:1px solid #27365e;color:var(--text);padding:8px 10px;border-radius:10px}}
-button.primary{{background:var(--accent);border:none;color:#fff;cursor:pointer}} button.ghost{{background:transparent;border-color:#2a375d}}
-.table{{width:100%;border-collapse:collapse;margin-top:10px}} .table th,.table td{{border-bottom:1px solid var(--line);padding:10px 8px;font-size:14px;text-align:left}}
-.dot{{width:10px;height:10px;border-radius:50%}} .green{{background:var(--green)}} .red{{background:var(--red)}}
-.small{{font-size:12px;color:var(--muted)}} .right{{margin-left:auto}} .spacer{{height:8px}}
-.footer{{text-align:center;opacity:.6;margin:18px 0}}
-a.link{{color:#aab8ff;text-decoration:none}} a.link:hover{{text-decoration:underline}}
-</style>
-</head>
-<body>
-  <div class="header">
-    <div class="row">
-      <div class="brand">Night Notes — EP Planner</div>
-      <span id="cloud" class="badge">Cloud: …</span>
-    </div>
-    <div class="nav" id="tabs"></div>
-    <div class="row">
-      <span id="who" class="small"></span>
-      <button id="logout" class="ghost">Log out</button>
-    </div>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Night Notes – EP Planner</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <script>
+      if (location.protocol === 'http:') location.href = location.href.replace('http:', 'https:');
+    </script>
+    <script type="module" crossorigin src="./assets/index-D-MgVNZ6.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C_5KnLdG.css">
+  </head>
+  <body class="bg-gradient-to-b from-nn_bg1 to-nn_bg2 text-nn_text font-inter">
+<div class="stars stars-2"></div>
+  <div class="stars stars-3"></div>
+  <div class="shooting shooting-1"></div>
+  <div class="shooting shooting-2"></div>
+  <div class="shooting shooting-3"></div>
+</div>
+<div class="sky stars s2"></div>
+  <div class="sky stars s3"></div>
+  <div class="sky meteor m1"></div>
+  <div class="sky meteor m2"></div>
+  <div class="sky meteor m3"></div>
+</div>
 
-  <div class="container" id="app"></div>
-  <div class="footer">© Night Notes • build 2025-08-18 13:24 UTC</div>
+<div id="sky-bg">
+  <div class="stars tw1"></div>
+  <div class="stars tw2"></div>
+  <div class="stars tw3"></div>
+</div>
+<div id="root"></div>
 
-<script type="module">
-// ---------- Firebase ----------
-const cfg = {"apiKey": "AIzaSyDujrir7S_vNDfnNq0ZkcTMHKYxsN5Ba54", "authDomain": "night-notes-c92e3.firebaseapp.com", "projectId": "night-notes-c92e3", "storageBucket": "night-notes-c92e3.firebasestorage.app", "messagingSenderId": "417664221420", "appId": "1:417664221420:web:bdcad8555d9fe157f225c9", "measurementId": "G-56G2YPDWNC"};
-import {{ initializeApp }} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {{ getFirestore, doc, getDoc, setDoc, onSnapshot }} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const app = initializeApp(cfg); const db = getFirestore(app);
 
-// ---------- State ----------
-const USERS = [{{name:"Martijn", pass:"123!"}}, {{name:"Nuno", pass:"123!"}}];
-let user = JSON.parse(localStorage.getItem('nn_user')||'null');
-let releases = []; // lijst van releases
-let streams  = {{}}; // {{ 'YYYY-MM-DD': {{ artistId: count }} }}
-let artists  = [];  // geladen uit /public/artists.json of fallback
-let tab = 'Releases';
 
-// ---------- Helpers ----------
-const REF = (name) => doc(db,'night-notes', name);
-const $ = (s,c=document)=>c.querySelector(s);
-const ymd = s => {{ const d=new Date(s); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }};
-const ym  = s => ymd(s).slice(0,7);
-const fmt = s => new Date(s).toLocaleDateString('nl-NL', {{ day:'2-digit', month:'2-digit', year:'numeric' }});
-
-async function loadDoc(key, fallback) {{
-  const snap = await getDoc(REF(key)); if (snap.exists()) return snap.data().value ?? fallback;
-  await setDoc(REF(key), {{ value: fallback }}); return fallback;
-}}
-async function saveDoc(key, value) {{ await setDoc(REF(key), {{ value }}); }}
-function listenDoc(key, cb) {{ return onSnapshot(REF(key), s=>{{ if(s.exists()) cb(s.data().value ?? null); }}); }}
-
-function setCloud(ok) {{ const c=$('#cloud'); c.textContent= ok? 'Cloud: verbonden' : 'Cloud: fout'; c.className='badge ' + (ok?'':'small'); }}
-
-// ---------- Tabs ----------
-const ALL_TABS = ['Releases','EP CHECKLIST','STREAMS','ADVERTENTIEBEHEER'];
-function renderTabs(){{
-  const box = $('#tabs'); box.innerHTML='';
-  ALL_TABS.forEach(t => {{ const b=document.createElement('button'); b.textContent=t; b.className=''+(t===tab?'active':''); b.onclick=()=>{{ tab=t; render(); }}; box.appendChild(b); }});
-}}
-
-// ---------- UI Sections ----------
-function loginView(){{
-  const card=document.createElement('div'); card.className='card';
-  card.innerHTML=`<div class="row"><strong>Inloggen</strong>
-    <input id="name" placeholder="Naam (Martijn/Nuno)">
-    <input id="pass" type="password" placeholder="Wachtwoord (123!)">
-    <button id="go" class="primary">Login</button></div>`;
-  card.querySelector('#go').onclick=()=>{{
-    const n=card.querySelector('#name').value.trim(); const p=card.querySelector('#pass').value;
-    const ok = USERS.some(u=>u.name===n && u.pass===p);
-    if(!ok) return alert('Onjuiste login');
-    user = n; localStorage.setItem('nn_user', JSON.stringify(user)); render();
-  }};
-  return card;
-}}
-
-function releasesView(){{
-  const wrap=document.createElement('div');
-  // Add form
-  const add=document.createElement('div'); add.className='card';
-  add.innerHTML=`<div class="row"><strong>Release toevoegen</strong>
-    <input type="date" id="d"><input placeholder="Artiest" id="a" style="min-width:220px">
-    <select id="w"><option value="">Wie?</option><option>Martijn</option><option>Nuno</option></select>
-    <select id="dist"><option value="">Distributie</option><option>Distrokid</option><option>Amuse</option></select>
-    <button id="add" class="primary">Toevoegen</button>
-    <span class="right small">Legenda: <span class="dot green"></span> klaar · <span class="dot red"></span> open — 2s vasthouden = hele maand groen</span>
-  </div>`;
-  add.querySelector('#add').onclick=async()=>{{
-    if(!user) return alert('Eerst inloggen');
-    const date=add.querySelector('#d').value, artist=add.querySelector('#a').value.trim();
-    const who=add.querySelector('#w').value||'', dist=add.querySelector('#dist').value||'';
-    if(!date||!artist) return alert('Datum en artiest verplicht');
-    releases.push({{ date, artist, who, dist, done:false, splits:false, buma:false }});
-    await saveDoc('releases', releases);
-    add.querySelector('#a').value='';
-  }};
-  wrap.appendChild(add);
-
-  // Filterbar
-  const bar=document.createElement('div'); bar.className='card';
-  bar.innerHTML=`<div class="row"><label>Filter maand:</label><select id="m"></select>
-  <button id="allGreen" class="primary">Alles groen (maand)</button>
-  <button id="reset" class="">Reset maand</button></div>`;
-  wrap.appendChild(bar);
-
-  // Table
-  const table=document.createElement('div'); table.className='card';
-  table.innerHTML=`<table class="table"><thead><tr><th>Datum</th><th>Artiest</th><th>Wie?</th><th>Distributie</th><th>Status</th><th>Splits</th><th>Buma/Stemra</th></tr></thead><tbody></tbody></table>`;
-  wrap.appendChild(table);
-
-  function fillMonths(){{
-    const months=Array.from(new Set(releases.map(r=>ym(r.date)))).sort();
-    const sel=bar.querySelector('#m'); sel.innerHTML='';
-    const o=document.createElement('option'); o.value='*'; o.textContent='Alle'; sel.appendChild(o);
-    months.forEach(m=>{{ const x=document.createElement('option'); x.value=m; x.textContent=m; sel.appendChild(x); }});
-  }}
-
-  function redraw(){{
-    fillMonths(); const sel=bar.querySelector('#m').value||'*';
-    const tb=table.querySelector('tbody'); tb.innerHTML='';
-    releases
-      .filter(r=>sel==='*'||ym(r.date)===sel)
-      .sort((a,b)=> new Date(a.date)-new Date(b.date))
-      .forEach((r,i)=>{{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${{fmt(r.date)}}</td><td>${{r.artist}}</td><td>${{r.who||''}}</td><td>${{r.dist||''}}</td>
-        <td><button data-i="${{i}}" class="toggle"><span class="dot ${{r.done?'green':'red'}}"></span></button></td>
-        <td><input type="checkbox" data-i="${{i}}" data-k="splits" ${{r.splits?'checked':''}}></td>
-        <td><input type="checkbox" data-i="${{i}}" data-k="buma" ${{r.buma?'checked':''}}></td>`;
-        tb.appendChild(tr);
-      }});
-    // events
-    tb.querySelectorAll('button.toggle').forEach(btn=>{{
-      const idx=+btn.dataset.i; let tmr;
-      btn.onmousedown=()=>{{ tmr=setTimeout(async()=>{{
-        const m=(bar.querySelector('#m').value||'*')==='*'?ym(releases[idx].date):bar.querySelector('#m').value;
-        releases.forEach(r=>{{ if(ym(r.date)===m) r.done=true; }});
-        await saveDoc('releases', releases);
-      }},2000); }};
-      btn.onmouseup=btn.onmouseleave=()=>clearTimeout(tmr);
-      btn.onclick=async()=>{{
-        // Alleen op klaar als splits & buma true
-        if(!releases[idx].done){{
-          if(!(releases[idx].splits && releases[idx].buma)) return alert('Eerst Splits + Buma/Stemra aanvinken');
-        }}
-        releases[idx].done=!releases[idx].done; await saveDoc('releases', releases);
-      }};
-    }});
-    tb.querySelectorAll('input[type="checkbox"]').forEach(ch=>{{
-      ch.onchange=async()=>{{ const i=+ch.dataset.i; const k=ch.dataset.k; releases[i][k]=ch.checked; await saveDoc('releases', releases); }};
-    }});
-  }}
-
-  bar.querySelector('#allGreen').onclick=async()=>{{
-    const sel=bar.querySelector('#m').value||'*'; if(sel==='*') return alert('Kies eerst een maand');
-    releases.forEach(r=>{{ if(ym(r.date)===sel) r.done=true; }}); await saveDoc('releases', releases);
-  }};
-  bar.querySelector('#reset').onclick=async()=>{{
-    const sel=bar.querySelector('#m').value||'*'; if(sel==='*') return alert('Kies eerst een maand');
-    releases.forEach(r=>{{ if(ym(r.date)===sel) r.done=false; }}); await saveDoc('releases', releases);
-  }};
-  bar.querySelector('#m').onchange=redraw;
-
-  redraw(); return wrap;
-}}
-
-function checklistView(){{
-  const card=document.createElement('div'); card.className='card';
-  const mine = releases.filter(r => (r.who||'').toLowerCase() === (user||'').toLowerCase()).filter(r => !r.done).sort((a,b)=> new Date(a.date)-new Date(b.date));
-  const next = mine[0];
-  card.innerHTML = next
-    ? `<div class="row"><strong>Jouw volgende:</strong><span class="badge">${{fmt(next.date)}}</span><span>${{next.artist}}</span></div>`
-    : `<div class="row"><strong>Geen open taken 🎉</strong></div>`;
-  const links=document.createElement('div'); links.className='row'; links.style.marginTop='10px';
-  links.innerHTML=`<a class="link" target="_blank" href="https://distrokid.com/">Distrokid</a>
-    <a class="link" target="_blank" href="https://www.amuse.io/">Amuse</a>
-    <a class="link" target="_blank" href="https://portal.bumastemra.nl/">Buma/Stemra</a>
-    <a class="link" target="_blank" href="https://drive.google.com/">Artworks</a>`;
-  card.appendChild(links);
-  return card;
-}}
-
-async function loadArtists(){{
-  try{{ const r=await fetch('public/artists.json'); if(r.ok) return await r.json(); }}catch(e){{}}
-  return [{"name": "Dreamflow", "id": "3JxvfjZaLHM60yYRt7BYZm"}, {"name": "Poluz", "id": "0vaXEuhH3eaJuTdMoLFdbN"}, {"name": "Doris Lost", "id": "43U1R9AZoGI3V5iaW6lht8"}, {"name": "Eternal", "id": "4oOqA7kbwce90hbDDKjoID"}, {"name": "Sleepy Teas", "id": "3Ax9FlTyHNJdOhAKaxhZl9"}, {"name": "ZizZa", "id": "20ajFDuyJzM8xGkWL9agiV"}, {"name": "Slaapmutsje", "id": "1iH0DmClTXD3DEXO490gbq"}];
-}}
-
-function streamsView(){{
-  const card=document.createElement('div'); card.className='card';
-  const date = new Date(); date.setDate(date.getDate()-1); const yesterday = ymd(date);
-  card.innerHTML=`<div class="row"><strong>Streams — gisteren</strong>
-    <input id="date" type="date" value="${{yesterday}}">
-    <button id="save" class="primary">Opslaan</button>
-    <span class="right small">Vul het aantal streams van gisteren per artiest (handmatig). Alles wordt gesynct.</span></div>
-    <div class="spacer"></div>
-    <table class="table"><thead><tr><th>Artiest</th><th>Artist ID</th><th>Gisteren</th><th></th></tr></thead><tbody></tbody></table>`;
-  const body=card.querySelector('tbody');
-  const theDate = ()=> card.querySelector('#date').value;
-
-  function redraw(){{
-    body.innerHTML='';
-    const day=theDate();
-    artists.forEach(a=>{{
-      const tr=document.createElement('tr');
-      const val = (streams[day] && streams[day][a.id]) || 0;
-      tr.innerHTML=`<td>${{a.name}}</td><td class="small">${{a.id}}</td>
-        <td><input data-id="${{a.id}}" type="number" min="0" value="${{val}}" style="width:120px"></td>
-        <td><a class="link" href="https://open.spotify.com/artist/${{a.id}}" target="_blank">Open dashboard</a></td>`;
-      body.appendChild(tr);
-    }});
-  }}
-
-  card.querySelector('#date').onchange=redraw;
-  card.querySelector('#save').onclick=async()=>{{
-    const day=theDate(); streams[day]=streams[day]||{{}};
-    body.querySelectorAll('input[type="number"]').forEach(inp=> streams[day][inp.dataset.id] = Number(inp.value||0));
-    await saveDoc('streams', streams);
-    alert('Opgeslagen ✅');
-  }};
-
-  redraw(); return card;
-}}
-
-function adsView(){{
-  const card=document.createElement('div'); card.className='card';
-  card.innerHTML=`<a class="primary" style="display:inline-block;padding:10px 12px;border-radius:10px;text-decoration:none" href="https://eppplannerpro.netlify.app/" target="_blank">Open Advertentiebeheer</a>`;
-  return card;
-}}
-
-// ---------- Main render ----------
-function render(){{
-  renderTabs();
-  $('#who').textContent = user ? ('Welkom '+user) : 'Niet ingelogd';
-  $('#logout').onclick = ()=>{{ localStorage.removeItem('nn_user'); user=null; render(); }};
-  const app=$('#app'); app.innerHTML='';
-  if(!user) {{ app.appendChild(loginView()); return; }}
-  if(tab==='Releases') app.appendChild(releasesView());
-  else if(tab==='EP CHECKLIST') app.appendChild(checklistView());
-  else if(tab==='STREAMS') app.appendChild(streamsView());
-  else app.appendChild(adsView());
-}}
-
-// ---------- Boot ----------
-(async()=>{{
-  try{{ setCloud(true); }}catch(e){{ setCloud(false); }}
-  // Data uit Firestore
-  releases = await loadDoc('releases', []);
-  streams  = await loadDoc('streams',  {{}});
-  artists  = await loadArtists();
-  // Realtime listeners
-  listenDoc('releases', v => {{ if(Array.isArray(v)){{ releases=v; if(tab==='Releases'||tab==='EP CHECKLIST') render(); }} }});
-  listenDoc('streams',  v => {{ if(v && typeof v==='object'){{ streams=v; if(tab==='STREAMS') render(); }} }});
-  render();
-}})();
-</script>
-</body>
+  </body>
 </html>

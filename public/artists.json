@@ -1,162 +1,30 @@
 [
   {
-    "name": "Ava Willow",
-    "spotifyId": "37rDPPf5ljzqE4MTvC1PyH",
-    "id": "37rDPPf5ljzqE4MTvC1PyH"
-  },
-  {
-    "name": "Celestine Viora",
-    "spotifyId": "2McwFGt12uHTCNmI7VhC2K",
-    "id": "2McwFGt12uHTCNmI7VhC2K"
-  },
-  {
-    "name": "Cosmic Calm",
-    "spotifyId": "0OXYrzdbgxer5KtxSTuUDy",
-    "id": "0OXYrzdbgxer5KtxSTuUDy"
-  },
-  {
-    "name": "Deep Sleep",
-    "spotifyId": "4d3WwgfETgTvddopuSfQ8i",
-    "id": "4d3WwgfETgTvddopuSfQ8i"
-  },
-  {
-    "name": "Domindo Nuni",
-    "spotifyId": "6IsY6SBSPEQFRDZYzsF2nS",
-    "id": "6IsY6SBSPEQFRDZYzsF2nS"
-  },
-  {
-    "name": "Doris Lost",
-    "spotifyId": "43U1R9AZoGI3V5iaW6lht8",
-    "id": "43U1R9AZoGI3V5iaW6lht8"
-  },
-  {
     "name": "Dreamflow",
-    "spotifyId": "3JxvfjZaLHM60yYRt7BYZm",
     "id": "3JxvfjZaLHM60yYRt7BYZm"
   },
   {
-    "name": "Eleanor Moon",
-    "spotifyId": "5d8GtQxBbULssUMeaHpTJ4",
-    "id": "5d8GtQxBbULssUMeaHpTJ4"
-  },
-  {
-    "name": "Eternal",
-    "spotifyId": "4oOqA7kbwce90hbDDKjoID",
-    "id": "4oOqA7kbwce90hbDDKjoID"
-  },
-  {
-    "name": "Evelyn Winter",
-    "spotifyId": "4ByXb0waTbnoUu4EaPPD2W",
-    "id": "4ByXb0waTbnoUu4EaPPD2W"
-  },
-  {
-    "name": "Katty",
-    "spotifyId": "7sWJR3GtdK9Jr09w5Nh16B",
-    "id": "7sWJR3GtdK9Jr09w5Nh16B"
-  },
-  {
-    "name": "Krople",
-    "spotifyId": "00yTD0tYQNrivASVQgBGes",
-    "id": "00yTD0tYQNrivASVQgBGes"
-  },
-  {
-    "name": "Lila Serene",
-    "spotifyId": "6CNN1uNMESxlBFkAlPLFGC",
-    "id": "6CNN1uNMESxlBFkAlPLFGC"
-  },
-  {
-    "name": "Loomy",
-    "spotifyId": "6nCQ2Jjeut72ninwDgB6Yy",
-    "id": "6nCQ2Jjeut72ninwDgB6Yy"
-  },
-  {
-    "name": "Luana Sol",
-    "spotifyId": "7dcX4psw7M8J5l1c5jRmX3",
-    "id": "7dcX4psw7M8J5l1c5jRmX3"
-  },
-  {
-    "name": "Ludo Legato",
-    "spotifyId": "00qvWOgeQtQf4XcxJM6DzU",
-    "id": "00qvWOgeQtQf4XcxJM6DzU"
-  },
-  {
-    "name": "Luna Nights",
-    "spotifyId": "2Ar9N9Kr5qNvDq188I0DsC",
-    "id": "2Ar9N9Kr5qNvDq188I0DsC"
-  },
-  {
-    "name": "Motionless",
-    "spotifyId": "3lQpO3wZJRN29Ijr8fpwaN",
-    "id": "3lQpO3wZJRN29Ijr8fpwaN"
-  },
-  {
-    "name": "Muted Mind",
-    "spotifyId": "1KJc2XcGCkzZypmNDhIMeR",
-    "id": "1KJc2XcGCkzZypmNDhIMeR"
-  },
-  {
-    "name": "Nunery Dream",
-    "spotifyId": "357zDmhgGTYSyYTyBTD65t",
-    "id": "357zDmhgGTYSyYTyBTD65t"
-  },
-  {
     "name": "Poluz",
-    "spotifyId": "0vaXEuhH3eaJuTdMoLFdbN",
     "id": "0vaXEuhH3eaJuTdMoLFdbN"
   },
   {
-    "name": "Rain Notes",
-    "spotifyId": "5P1RyLkpa2GMDium23Ptn6",
-    "id": "5P1RyLkpa2GMDium23Ptn6"
+    "name": "Doris Lost",
+    "id": "43U1R9AZoGI3V5iaW6lht8"
   },
   {
-    "name": "Rekkel Paals",
-    "spotifyId": "61Qha9Ylp3V6dDX8Jj5Z1z",
-    "id": "61Qha9Ylp3V6dDX8Jj5Z1z"
-  },
-  {
-    "name": "Slaapmutsje",
-    "spotifyId": "1iH0DmClTXD3DEXO490gbq",
-    "id": "1iH0DmClTXD3DEXO490gbq"
-  },
-  {
-    "name": "Sleepy Delrow",
-    "spotifyId": "5AzDNSnXecyb5n2SGEk210",
-    "id": "5AzDNSnXecyb5n2SGEk210"
+    "name": "Eternal",
+    "id": "4oOqA7kbwce90hbDDKjoID"
   },
   {
     "name": "Sleepy Teas",
-    "spotifyId": "3Ax9FlTyHNJdOhAKaxhZl9",
     "id": "3Ax9FlTyHNJdOhAKaxhZl9"
   },
   {
-    "name": "Soft Dawn",
-    "spotifyId": "1lw523m68IbWJqOXAW1dp6",
-    "id": "1lw523m68IbWJqOXAW1dp6"
-  },
-  {
-    "name": "Sophia Vale",
-    "spotifyId": "79A1B10WsQEm7MiRCHC9Fa",
-    "id": "79A1B10WsQEm7MiRCHC9Fa"
-  },
-  {
-    "name": "Swooshy",
-    "spotifyId": "6kWh8CBUb92RPXrCMzJ2og",
-    "id": "6kWh8CBUb92RPXrCMzJ2og"
-  },
-  {
-    "name": "Vallie Ginns",
-    "spotifyId": "2tKuJrJLd6BARL1GVE3VVT",
-    "id": "2tKuJrJLd6BARL1GVE3VVT"
-  },
-  {
-    "name": "Wishes",
-    "spotifyId": "4cGEMRW0A7PAZcovV3S8KT",
-    "id": "4cGEMRW0A7PAZcovV3S8KT"
-  },
-  {
     "name": "ZizZa",
-    "spotifyId": "20ajFDuyJzM8xGkWL9agiV",
     "id": "20ajFDuyJzM8xGkWL9agiV"
+  },
+  {
+    "name": "Slaapmutsje",
+    "id": "1iH0DmClTXD3DEXO490gbq"
   }
 ]

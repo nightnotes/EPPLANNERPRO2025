@@ -1,118 +1,276 @@
 <!doctype html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Night Notes – EP Planner (Realtime Sync)</title>
-  <style>
-*{box-sizing:border-box}body{font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;background:#0b1020;color:#e9eefc}
-.header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #1f2942;position:sticky;top:0;background:#0b1020;z-index:9}
-.container{max-width:1200px;margin:0 auto;padding:16px}
-.card{background:#0f1630;border:1px solid #1f2942;border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.35)}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.tab{padding:8px 12px;border-radius:999px;border:1px solid #2a375d;background:#0f1630;cursor:pointer}
-.tab.active{background:#1a2750}
-.input,select{background:#0b132a;border:1px solid #27365e;color:#e9eefc;padding:8px 10px;border-radius:8px}
-.button{background:#3357ff;color:#fff;padding:8px 12px;border:none;border-radius:8px;cursor:pointer}
-.button.ghost{background:transparent;border:1px solid #2a375d}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:10px 8px;border-bottom:1px solid #1f2942;font-size:14px}
-.badge{padding:4px 8px;border-radius:999px;border:1px solid #2a375d;font-size:12px}
-.dot{width:10px;height:10px;border-radius:50%}.dot.red{background:#ef4444}.dot.green{background:#22c55e}
-.footer{opacity:.6;font-size:12px;text-align:center;padding:16px}
-.login{min-height:45vh;display:flex;align-items:center;justify-content:center}
-h2{margin:0 0 8px 0}
-.small{font-size:12px;opacity:.75}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Night Notes – EP Planner</title>
+<meta name="color-scheme" content="dark light">
+<style>
+:root{{--bg:#0b1020;--panel:#0f1630;--line:#1f2942;--text:#e9eefc;--muted:#a7b1d8;--green:#22c55e;--red:#ef4444;--purple:#6c76ff;--accent:#815cff}}
+*{{box-sizing:border-box}} body{{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}}
+.header{{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}}
+.brand{{font-weight:700}} .nav{{display:flex;gap:8px;flex-wrap:wrap}} .nav button{{background:#121a36;border:1px solid #27365e;color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}}
+.nav .active{{background:#1a2750;border-color:#3a4b7b}} .container{{max-width:1200px;margin:0 auto;padding:18px}}
+.card{{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}}
+.row{{display:flex;gap:10px;align-items:center;flex-wrap:wrap}}
+.badge{{border:1px solid var(--line);padding:6px 10px;border-radius:999px;font-size:12px}}
+input,select,button{{background:#0b132a;border:1px solid #27365e;color:var(--text);padding:8px 10px;border-radius:10px}}
+button.primary{{background:var(--accent);border:none;color:#fff;cursor:pointer}} button.ghost{{background:transparent;border-color:#2a375d}}
+.table{{width:100%;border-collapse:collapse;margin-top:10px}} .table th,.table td{{border-bottom:1px solid var(--line);padding:10px 8px;font-size:14px;text-align:left}}
+.dot{{width:10px;height:10px;border-radius:50%}} .green{{background:var(--green)}} .red{{background:var(--red)}}
+.small{{font-size:12px;color:var(--muted)}} .right{{margin-left:auto}} .spacer{{height:8px}}
+.footer{{text-align:center;opacity:.6;margin:18px 0}}
+a.link{{color:#aab8ff;text-decoration:none}} a.link:hover{{text-decoration:underline}}
 </style>
 </head>
 <body>
-  <div id="app" class="container"></div>
-  <div class="footer">© Night Notes • build: 2025-08-18 11:51:32 UTC</div>
-  <script>
-(()=>{
-  const USERS=[{name:"Martijn",password:"123!"},{name:"Nuno",password:"123!"}];
-  const FIREBASE_CONFIG={"apiKey": "AIzaSyDujrir7S_vNDfnNq0ZkcTMHKYxsN5Ba54", "authDomain": "night-notes-c92e3.firebaseapp.com", "projectId": "night-notes-c92e3", "storageBucket": "night-notes-c92e3.firebasestorage.app", "messagingSenderId": "417664221420", "appId": "1:417664221420:web:bdcad8555d9fe157f225c9", "measurementId": "G-56G2YPDWNC"};
-  const fmt=s=>new Date(s).toLocaleDateString('nl-NL',{year:'numeric',month:'2-digit',day:'2-digit'});
-  const $=(s,c=document)=>c.querySelector(s);
+  <div class="header">
+    <div class="row">
+      <div class="brand">Night Notes — EP Planner</div>
+      <span id="cloud" class="badge">Cloud: …</span>
+    </div>
+    <div class="nav" id="tabs"></div>
+    <div class="row">
+      <span id="who" class="small"></span>
+      <button id="logout" class="ghost">Log out</button>
+    </div>
+  </div>
 
-  const Sync={useFirebase:false,db:null,status:'Offline',D:null,G:null,S:null,N:null,
-    async init(){ try{ return await this.enable(FIREBASE_CONFIG); } catch(e){ console.error(e); return false; } },
-    async enable(cfg){ try{
-      const appMod=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
-      const fs=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-      const app=appMod.initializeApp(cfg);
-      this.db=fs.getFirestore(app); this.D=fs.doc; this.G=fs.getDoc; this.S=fs.setDoc; this.N=fs.onSnapshot;
-      this.useFirebase=true; this.status='Online'; console.log('[Sync] Firestore Online project:', cfg.projectId); return true;
-    }catch(e){ this.status='Error'; console.error('[Sync] init failed', e); return false; }},
-    async get(key,fallback){ if(this.useFirebase&&this.db){ const ref=this.D(this.db,'night-notes',key); const snap=await this.G(ref); if(snap.exists()) return snap.data().value; await this.S(ref,{value:fallback}); return fallback; } try{ return JSON.parse(localStorage.getItem(key)) ?? fallback; }catch{ return fallback; } },
-    async set(key,val){ if(this.useFirebase&&this.db){ const ref=this.D(this.db,'night-notes',key); await this.S(ref,{value:val}); console.log('[Sync] pushed', key); return; } localStorage.setItem(key, JSON.stringify(val)); },
-    listen(key,cb){ if(this.useFirebase&&this.db){ const ref=this.D(this.db,'night-notes',key); return this.N(ref,(snap)=>{ if(snap.exists()) cb(snap.data().value); }); } return ()=>{}; }
-  };
+  <div class="container" id="app"></div>
+  <div class="footer">© Night Notes • build 2025-08-18 13:24 UTC</div>
 
-  const state={ user: JSON.parse(localStorage.getItem('user')||'null'), tab:'Releases', releases:[], streams:[] };
+<script type="module">
+// ---------- Firebase ----------
+const cfg = {"apiKey": "AIzaSyDujrir7S_vNDfnNq0ZkcTMHKYxsN5Ba54", "authDomain": "night-notes-c92e3.firebaseapp.com", "projectId": "night-notes-c92e3", "storageBucket": "night-notes-c92e3.firebasestorage.app", "messagingSenderId": "417664221420", "appId": "1:417664221420:web:bdcad8555d9fe157f225c9", "measurementId": "G-56G2YPDWNC"};
+import {{ initializeApp }} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {{ getFirestore, doc, getDoc, setDoc, onSnapshot }} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const app = initializeApp(cfg); const db = getFirestore(app);
 
-  function header(){ const h=document.createElement('div'); h.className='header';
-    const left=document.createElement('div'); left.className='row'; const t=document.createElement('h1'); t.textContent='Night Notes – EP Planner'; left.appendChild(t);
-    const debug=document.createElement('div'); debug.className='row';
-      const status=document.createElement('span'); status.id='syncStatus'; status.className='badge'; status.textContent='Sync: '+Sync.status; debug.appendChild(status);
-      const pull=document.createElement('button'); pull.className='button ghost'; pull.textContent='Forceer laden'; pull.title='Cloud → Local'; pull.onclick=async()=>{ const v=await Sync.get('releases',[]); state.releases=v; renderBody(); }; debug.appendChild(pull);
-      const push=document.createElement('button'); push.className='button ghost'; push.textContent='Forceer push'; push.title='Local → Cloud'; push.onclick=async()=>{ await Sync.set('releases', state.releases); alert('Naar cloud geschreven'); }; debug.appendChild(push);
-      const wipe=document.createElement('button'); wipe.className='button ghost'; wipe.textContent='Wis lokaal'; wipe.onclick=()=>{ localStorage.clear(); alert('Lokale storage gewist. Herlaad de pagina.'); }; debug.appendChild(wipe);
-    const right=document.createElement('div'); right.className='row'; const out=document.createElement('button'); out.className='button ghost'; out.textContent= state.user? 'Uitloggen':'Login'; out.onclick=()=>{ if(state.user){ state.user=null; localStorage.removeItem('user'); render(); } }; right.appendChild(out);
-    h.appendChild(left); h.appendChild(debug); h.appendChild(right); return h; }
+// ---------- State ----------
+const USERS = [{{name:"Martijn", pass:"123!"}}, {{name:"Nuno", pass:"123!"}}];
+let user = JSON.parse(localStorage.getItem('nn_user')||'null');
+let releases = []; // lijst van releases
+let streams  = {{}}; // {{ 'YYYY-MM-DD': {{ artistId: count }} }}
+let artists  = [];  // geladen uit /public/artists.json of fallback
+let tab = 'Releases';
 
-  function tabs(curr,set){ const w=document.createElement('div'); w.className='tabs'; ['Releases','EP Checklist','Streams','Advertentiebeheer'].forEach(t=>{ const b=document.createElement('button'); b.className='tab'+(t===curr?' active':''); b.textContent=t; b.onclick=()=>set(t); w.appendChild(b); }); return w; }
+// ---------- Helpers ----------
+const REF = (name) => doc(db,'night-notes', name);
+const $ = (s,c=document)=>c.querySelector(s);
+const ymd = s => {{ const d=new Date(s); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }};
+const ym  = s => ymd(s).slice(0,7);
+const fmt = s => new Date(s).toLocaleDateString('nl-NL', {{ day:'2-digit', month:'2-digit', year:'numeric' }});
 
-  function viewLogin(){ const box=document.createElement('div'); box.className='card login'; box.innerHTML=`<form class="grid" style="min-width:320px;gap:12px">
-    <h2 style="text-align:center">Inloggen</h2>
-    <input class="input" name="name" placeholder="Naam (Martijn/Nuno)"/><input class="input" name="pass" type="password" placeholder="Wachtwoord (123!)"/>
-    <button class="button" type="submit">Login</button></form>`;
-    box.querySelector('form').onsubmit=(e)=>{ e.preventDefault(); const n=e.target.name.value.trim(), p=e.target.pass.value; const ok=['Martijn','Nuno'].includes(n) && p==='123!'; if(!ok) return alert('Onjuiste login'); state.user=n; localStorage.setItem('user', JSON.stringify(n)); render(); };
-    return box; }
+async function loadDoc(key, fallback) {{
+  const snap = await getDoc(REF(key)); if (snap.exists()) return snap.data().value ?? fallback;
+  await setDoc(REF(key), {{ value: fallback }}); return fallback;
+}}
+async function saveDoc(key, value) {{ await setDoc(REF(key), {{ value }}); }}
+function listenDoc(key, cb) {{ return onSnapshot(REF(key), s=>{{ if(s.exists()) cb(s.data().value ?? null); }}); }}
 
-  function addReleaseForm(onAdd){ const f=document.createElement('div'); f.className='card'; f.innerHTML=`<div class="row" style="gap:8px;flex-wrap:wrap">
-      <h2>Release toevoegen</h2><span class="small">(Datum + Artiest verplicht)</span></div>
-      <div class="row" style="gap:8px;flex-wrap:wrap">
-      <input class="input" type="date" id="relDate"/><input class="input" placeholder="Artiest" id="relArtist" style="min-width:220px"/>
-      <select class="input" id="relOwner"><option value="">Owner</option><option>ERRY</option><option>NUNEAUX</option><option>ADHD</option><option>EXTRA</option></select>
-      <select class="input" id="relType"><option value="">Type</option><option>Core</option><option>Extra</option><option>ADHD Sleep</option></select>
-      <button class="button" id="addBtn">Toevoegen</button></div>`;
-    f.querySelector('#addBtn').onclick=()=>{ const date=f.querySelector('#relDate').value; const artist=f.querySelector('#relArtist').value.trim(); const owner=f.querySelector('#relOwner').value||''; const type=f.querySelector('#relType').value||''; if(!date||!artist) return alert('Datum en artiest zijn verplicht'); onAdd({date,artist,owner,type,done:false,splits:false,buma:false}); };
-    return f; }
+function setCloud(ok) {{ const c=$('#cloud'); c.textContent= ok? 'Cloud: verbonden' : 'Cloud: fout'; c.className='badge ' + (ok?'':'small'); }}
 
-  function releasesView(){ const wrap=document.createElement('div'); wrap.appendChild(addReleaseForm(async it=>{ state.releases.push(it); await Sync.set('releases', state.releases); renderBody(); }));
-    const card=document.createElement('div'); card.className='card'; const top=document.createElement('div'); top.className='row'; top.style.cssText='justify-content:space-between;gap:10px;flex-wrap:wrap';
-    const left=document.createElement('div'); left.className='row'; const search=document.createElement('input'); search.className='input'; search.placeholder='Zoek op artiest';
-    const only=document.createElement('input'); only.type='checkbox'; const lbl=document.createElement('label'); lbl.className='row'; lbl.textContent=' Alleen open'; lbl.prepend(only);
-    left.appendChild(search); left.appendChild(lbl); const cnt=document.createElement('span'); cnt.className='badge'; cnt.textContent='0 releases'; top.appendChild(left); top.appendChild(cnt); card.appendChild(top);
-    const scroller=document.createElement('div'); scroller.style.cssText='overflow:auto;max-height:60vh;margin-top:8px'; const table=document.createElement('table'); table.className='table';
-    table.innerHTML='<thead><tr><th>Datum</th><th>Artiest</th><th>Type</th><th>Owner</th><th>Status</th><th>Splits</th><th>Buma/Stemra</th></tr></thead><tbody></tbody>'; const tbody=table.querySelector('tbody'); scroller.appendChild(table); card.appendChild(scroller);
-    function redraw(){ const q=(search.value||'').toLowerCase(); const list=state.releases.filter(r=>!q||(r.artist||'').toLowerCase().includes(q)).filter(r=>!only.checked||!r.done).sort((a,b)=> new Date(a.date)-new Date(b.date));
-      cnt.textContent=`${{list.length}} releases`; tbody.innerHTML=''; list.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${{fmt(r.date)}}</td><td>${{r.artist}}</td>
-        <td><span class="badge">${{r.type||''}}</span></td><td><span class="badge">${{r.owner||''}}</span></td>
-        <td><div class="row"><div class="dot ${{r.done?'green':'red'}}"></div><button class="button ghost">${{r.done?'Klaar':'Open'}}</button></div></td>
-        <td><input type="checkbox" ${{r.splits?'checked':''}}></td><td><input type="checkbox" ${{r.buma?'checked':''}}></td>`;
-        tr.querySelector('button').onclick=async()=>{{ r.done=!r.done; await Sync.set('releases', state.releases); redraw(); }};
-        const [c1,c2]=tr.querySelectorAll('input'); c1.onchange=async e=>{{ r.splits=e.target.checked; await Sync.set('releases', state.releases); }}; c2.onchange=async e=>{{ r.buma=e.target.checked; await Sync.set('releases', state.releases); }};
-        tbody.appendChild(tr); }); }
-    [search,only].forEach(el=>el.addEventListener('input',redraw)); redraw(); const wrap2=document.createElement('div'); wrap2.appendChild(card); return wrap2; }
+// ---------- Tabs ----------
+const ALL_TABS = ['Releases','EP CHECKLIST','STREAMS','ADVERTENTIEBEHEER'];
+function renderTabs(){{
+  const box = $('#tabs'); box.innerHTML='';
+  ALL_TABS.forEach(t => {{ const b=document.createElement('button'); b.textContent=t; b.className=''+(t===tab?'active':''); b.onclick=()=>{{ tab=t; render(); }}; box.appendChild(b); }});
+}}
 
-  function epChecklist(){ const c=document.createElement('div'); c.className='card'; c.textContent='EP Checklist gebruikt dezelfde data als Releases.'; return c; }
-  function streamsView(){ const c=document.createElement('div'); c.className='card'; c.textContent='Streams syncen via document "streams".'; return c; }
-  function adsView(){ const c=document.createElement('div'); c.className='card'; c.innerHTML='<a class="button" href="https://eppplannerpro.netlify.app/" target="_blank">Open Advertentiebeheer</a>'; return c; }
+// ---------- UI Sections ----------
+function loginView(){{
+  const card=document.createElement('div'); card.className='card';
+  card.innerHTML=`<div class="row"><strong>Inloggen</strong>
+    <input id="name" placeholder="Naam (Martijn/Nuno)">
+    <input id="pass" type="password" placeholder="Wachtwoord (123!)">
+    <button id="go" class="primary">Login</button></div>`;
+  card.querySelector('#go').onclick=()=>{{
+    const n=card.querySelector('#name').value.trim(); const p=card.querySelector('#pass').value;
+    const ok = USERS.some(u=>u.name===n && u.pass===p);
+    if(!ok) return alert('Onjuiste login');
+    user = n; localStorage.setItem('nn_user', JSON.stringify(user)); render();
+  }};
+  return card;
+}}
 
-  function renderBody(){ const app=document.getElementById('app'); app.innerHTML=''; app.appendChild(tabs(state.tab,(t)=>{ state.tab=t; renderBody(); }));
-    if(state.tab==='Releases') app.appendChild(releasesView()); else if(state.tab==='EP Checklist') app.appendChild(epChecklist()); else if(state.tab==='Streams') app.appendChild(streamsView()); else app.appendChild(adsView()); }
+function releasesView(){{
+  const wrap=document.createElement('div');
+  // Add form
+  const add=document.createElement('div'); add.className='card';
+  add.innerHTML=`<div class="row"><strong>Release toevoegen</strong>
+    <input type="date" id="d"><input placeholder="Artiest" id="a" style="min-width:220px">
+    <select id="w"><option value="">Wie?</option><option>Martijn</option><option>Nuno</option></select>
+    <select id="dist"><option value="">Distributie</option><option>Distrokid</option><option>Amuse</option></select>
+    <button id="add" class="primary">Toevoegen</button>
+    <span class="right small">Legenda: <span class="dot green"></span> klaar · <span class="dot red"></span> open — 2s vasthouden = hele maand groen</span>
+  </div>`;
+  add.querySelector('#add').onclick=async()=>{{
+    if(!user) return alert('Eerst inloggen');
+    const date=add.querySelector('#d').value, artist=add.querySelector('#a').value.trim();
+    const who=add.querySelector('#w').value||'', dist=add.querySelector('#dist').value||'';
+    if(!date||!artist) return alert('Datum en artiest verplicht');
+    releases.push({{ date, artist, who, dist, done:false, splits:false, buma:false }});
+    await saveDoc('releases', releases);
+    add.querySelector('#a').value='';
+  }};
+  wrap.appendChild(add);
 
-  async function boot(){ document.body.prepend(header()); await Sync.init(); $('#syncStatus').textContent='Sync: '+Sync.status;
-    const saved=await Sync.get('releases', null); state.releases = saved ?? []; if(saved===null) await Sync.set('releases', state.releases);
-    state.streams = await Sync.get('streams', []);
-    if(!state.user) document.getElementById('app').appendChild(viewLogin()); else renderBody();
-    Sync.listen('releases',(val)=>{ state.releases=val; if(state.tab==='Releases') renderBody(); });
-    Sync.listen('streams',(val)=>{ state.streams=val; if(state.tab==='Streams') renderBody(); });
-  } boot();
-})();
+  // Filterbar
+  const bar=document.createElement('div'); bar.className='card';
+  bar.innerHTML=`<div class="row"><label>Filter maand:</label><select id="m"></select>
+  <button id="allGreen" class="primary">Alles groen (maand)</button>
+  <button id="reset" class="">Reset maand</button></div>`;
+  wrap.appendChild(bar);
+
+  // Table
+  const table=document.createElement('div'); table.className='card';
+  table.innerHTML=`<table class="table"><thead><tr><th>Datum</th><th>Artiest</th><th>Wie?</th><th>Distributie</th><th>Status</th><th>Splits</th><th>Buma/Stemra</th></tr></thead><tbody></tbody></table>`;
+  wrap.appendChild(table);
+
+  function fillMonths(){{
+    const months=Array.from(new Set(releases.map(r=>ym(r.date)))).sort();
+    const sel=bar.querySelector('#m'); sel.innerHTML='';
+    const o=document.createElement('option'); o.value='*'; o.textContent='Alle'; sel.appendChild(o);
+    months.forEach(m=>{{ const x=document.createElement('option'); x.value=m; x.textContent=m; sel.appendChild(x); }});
+  }}
+
+  function redraw(){{
+    fillMonths(); const sel=bar.querySelector('#m').value||'*';
+    const tb=table.querySelector('tbody'); tb.innerHTML='';
+    releases
+      .filter(r=>sel==='*'||ym(r.date)===sel)
+      .sort((a,b)=> new Date(a.date)-new Date(b.date))
+      .forEach((r,i)=>{{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${{fmt(r.date)}}</td><td>${{r.artist}}</td><td>${{r.who||''}}</td><td>${{r.dist||''}}</td>
+        <td><button data-i="${{i}}" class="toggle"><span class="dot ${{r.done?'green':'red'}}"></span></button></td>
+        <td><input type="checkbox" data-i="${{i}}" data-k="splits" ${{r.splits?'checked':''}}></td>
+        <td><input type="checkbox" data-i="${{i}}" data-k="buma" ${{r.buma?'checked':''}}></td>`;
+        tb.appendChild(tr);
+      }});
+    // events
+    tb.querySelectorAll('button.toggle').forEach(btn=>{{
+      const idx=+btn.dataset.i; let tmr;
+      btn.onmousedown=()=>{{ tmr=setTimeout(async()=>{{
+        const m=(bar.querySelector('#m').value||'*')==='*'?ym(releases[idx].date):bar.querySelector('#m').value;
+        releases.forEach(r=>{{ if(ym(r.date)===m) r.done=true; }});
+        await saveDoc('releases', releases);
+      }},2000); }};
+      btn.onmouseup=btn.onmouseleave=()=>clearTimeout(tmr);
+      btn.onclick=async()=>{{
+        // Alleen op klaar als splits & buma true
+        if(!releases[idx].done){{
+          if(!(releases[idx].splits && releases[idx].buma)) return alert('Eerst Splits + Buma/Stemra aanvinken');
+        }}
+        releases[idx].done=!releases[idx].done; await saveDoc('releases', releases);
+      }};
+    }});
+    tb.querySelectorAll('input[type="checkbox"]').forEach(ch=>{{
+      ch.onchange=async()=>{{ const i=+ch.dataset.i; const k=ch.dataset.k; releases[i][k]=ch.checked; await saveDoc('releases', releases); }};
+    }});
+  }}
+
+  bar.querySelector('#allGreen').onclick=async()=>{{
+    const sel=bar.querySelector('#m').value||'*'; if(sel==='*') return alert('Kies eerst een maand');
+    releases.forEach(r=>{{ if(ym(r.date)===sel) r.done=true; }}); await saveDoc('releases', releases);
+  }};
+  bar.querySelector('#reset').onclick=async()=>{{
+    const sel=bar.querySelector('#m').value||'*'; if(sel==='*') return alert('Kies eerst een maand');
+    releases.forEach(r=>{{ if(ym(r.date)===sel) r.done=false; }}); await saveDoc('releases', releases);
+  }};
+  bar.querySelector('#m').onchange=redraw;
+
+  redraw(); return wrap;
+}}
+
+function checklistView(){{
+  const card=document.createElement('div'); card.className='card';
+  const mine = releases.filter(r => (r.who||'').toLowerCase() === (user||'').toLowerCase()).filter(r => !r.done).sort((a,b)=> new Date(a.date)-new Date(b.date));
+  const next = mine[0];
+  card.innerHTML = next
+    ? `<div class="row"><strong>Jouw volgende:</strong><span class="badge">${{fmt(next.date)}}</span><span>${{next.artist}}</span></div>`
+    : `<div class="row"><strong>Geen open taken 🎉</strong></div>`;
+  const links=document.createElement('div'); links.className='row'; links.style.marginTop='10px';
+  links.innerHTML=`<a class="link" target="_blank" href="https://distrokid.com/">Distrokid</a>
+    <a class="link" target="_blank" href="https://www.amuse.io/">Amuse</a>
+    <a class="link" target="_blank" href="https://portal.bumastemra.nl/">Buma/Stemra</a>
+    <a class="link" target="_blank" href="https://drive.google.com/">Artworks</a>`;
+  card.appendChild(links);
+  return card;
+}}
+
+async function loadArtists(){{
+  try{{ const r=await fetch('public/artists.json'); if(r.ok) return await r.json(); }}catch(e){{}}
+  return [{"name": "Dreamflow", "id": "3JxvfjZaLHM60yYRt7BYZm"}, {"name": "Poluz", "id": "0vaXEuhH3eaJuTdMoLFdbN"}, {"name": "Doris Lost", "id": "43U1R9AZoGI3V5iaW6lht8"}, {"name": "Eternal", "id": "4oOqA7kbwce90hbDDKjoID"}, {"name": "Sleepy Teas", "id": "3Ax9FlTyHNJdOhAKaxhZl9"}, {"name": "ZizZa", "id": "20ajFDuyJzM8xGkWL9agiV"}, {"name": "Slaapmutsje", "id": "1iH0DmClTXD3DEXO490gbq"}];
+}}
+
+function streamsView(){{
+  const card=document.createElement('div'); card.className='card';
+  const date = new Date(); date.setDate(date.getDate()-1); const yesterday = ymd(date);
+  card.innerHTML=`<div class="row"><strong>Streams — gisteren</strong>
+    <input id="date" type="date" value="${{yesterday}}">
+    <button id="save" class="primary">Opslaan</button>
+    <span class="right small">Vul het aantal streams van gisteren per artiest (handmatig). Alles wordt gesynct.</span></div>
+    <div class="spacer"></div>
+    <table class="table"><thead><tr><th>Artiest</th><th>Artist ID</th><th>Gisteren</th><th></th></tr></thead><tbody></tbody></table>`;
+  const body=card.querySelector('tbody');
+  const theDate = ()=> card.querySelector('#date').value;
+
+  function redraw(){{
+    body.innerHTML='';
+    const day=theDate();
+    artists.forEach(a=>{{
+      const tr=document.createElement('tr');
+      const val = (streams[day] && streams[day][a.id]) || 0;
+      tr.innerHTML=`<td>${{a.name}}</td><td class="small">${{a.id}}</td>
+        <td><input data-id="${{a.id}}" type="number" min="0" value="${{val}}" style="width:120px"></td>
+        <td><a class="link" href="https://open.spotify.com/artist/${{a.id}}" target="_blank">Open dashboard</a></td>`;
+      body.appendChild(tr);
+    }});
+  }}
+
+  card.querySelector('#date').onchange=redraw;
+  card.querySelector('#save').onclick=async()=>{{
+    const day=theDate(); streams[day]=streams[day]||{{}};
+    body.querySelectorAll('input[type="number"]').forEach(inp=> streams[day][inp.dataset.id] = Number(inp.value||0));
+    await saveDoc('streams', streams);
+    alert('Opgeslagen ✅');
+  }};
+
+  redraw(); return card;
+}}
+
+function adsView(){{
+  const card=document.createElement('div'); card.className='card';
+  card.innerHTML=`<a class="primary" style="display:inline-block;padding:10px 12px;border-radius:10px;text-decoration:none" href="https://eppplannerpro.netlify.app/" target="_blank">Open Advertentiebeheer</a>`;
+  return card;
+}}
+
+// ---------- Main render ----------
+function render(){{
+  renderTabs();
+  $('#who').textContent = user ? ('Welkom '+user) : 'Niet ingelogd';
+  $('#logout').onclick = ()=>{{ localStorage.removeItem('nn_user'); user=null; render(); }};
+  const app=$('#app'); app.innerHTML='';
+  if(!user) {{ app.appendChild(loginView()); return; }}
+  if(tab==='Releases') app.appendChild(releasesView());
+  else if(tab==='EP CHECKLIST') app.appendChild(checklistView());
+  else if(tab==='STREAMS') app.appendChild(streamsView());
+  else app.appendChild(adsView());
+}}
+
+// ---------- Boot ----------
+(async()=>{{
+  try{{ setCloud(true); }}catch(e){{ setCloud(false); }}
+  // Data uit Firestore
+  releases = await loadDoc('releases', []);
+  streams  = await loadDoc('streams',  {{}});
+  artists  = await loadArtists();
+  // Realtime listeners
+  listenDoc('releases', v => {{ if(Array.isArray(v)){{ releases=v; if(tab==='Releases'||tab==='EP CHECKLIST') render(); }} }});
+  listenDoc('streams',  v => {{ if(v && typeof v==='object'){{ streams=v; if(tab==='STREAMS') render(); }} }});
+  render();
+}})();
 </script>
 </body>
 </html>
